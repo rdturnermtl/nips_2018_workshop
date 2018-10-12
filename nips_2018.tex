@@ -26,6 +26,9 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 
+\usepackage{booktabs}
+\usepackage{siunitx}
+
 \title{Formatting instructions for NIPS 2018}
 
 % The \author macro works with any number of authors. There are two
@@ -69,6 +72,8 @@
   %% \texttt{email} \\
 }
 
+\newcommand{\code}{\texttt}
+
 \begin{document}
 % \nipsfinalcopy is no longer used
 
@@ -97,6 +102,68 @@ Therefore, we allow a single model to be benchmarked according to multiple metri
 However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that can convert a predictive distribution into an action.
 Indeed the classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median.
 This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
+
+\section{The interface}
+
+% TODO accro
+Benchmark tools was largely motivated by noticing that on any applied ML project there many repeated ``boilerplate'' code segments that frequently repeat across projects.
+These based upon splitting the data, training the models, testing the models, and doing a benchmark analysis with statistical analysis.
+Also, proper formatting of tables for presentation of the results is also a common repetetive task.
+
+The high level interface of the package has just two phases: \code{just\_benchmark} and \code{just\_format\_it}.
+These work as follows:	
+\begin{verbatim}
+import benchmark_tools.classification as btc
+from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
+performance_df, performance_curves_dict = \
+    btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
+                       STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method)
+\end{verbatim}
+This benchmarks all the models in the classifiers dictionary on the data \code{(X\_train, y\_train, X\_test, y\_test)} for 2-class classification.
+It uses the loss function described in the dictionaries \code{STD\_CLASS\_LOSS}, and the curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}.
+\code{ref\_method} defines the model that is the reference to compare against (i.e., for a paired statistical test giving tighter error bars) for assessing statistically significant performance gains.
+The \code{classifiers} dictionary is as simple as:
+\begin{verbatim}
+classifiers = \
+    {'Nearest Neighbors': KNeighborsClassifier(3),
+     'Linear SVM': SVC(kernel='linear', C=0.025, probability=True),
+     'RBF SVM': SVC(gamma=2, C=1, probability=True),
+     ...
+\end{verbatim}
+The objects need not be sklearn objects but merely support the methods \code{fit} and \code{predict\_log\_proba} as per the sklearn interface.
+
+The sciprint module formats these tables for scientific presentation.
+The performance dictionaries can be converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, thresholding huge/small (crap limit) results, and correct alignment of decimal points, units in headers, etc.
+Here we use:
+\begin{verbatim}
+import benchmark_tools.sciprint as sp
+print sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
+                        crap_limit_min={'AUPRG': -1},
+                        EB_limit={'AUPRG': -1},
+                        non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True)
+\end{verbatim}
+Both plain text and \LaTeX tables are available via the \code{use\_tex} argument.
+The above snippet produces the \LaTeX table:\\
+{\tiny
+\begin{tabular}{|l|Sr|Sr|Sr|Sr|Sr|Sr|Sr|}
+\toprule
+{}                &       {AP} &      {p} &      {AUC} &      {p} &  {AUPRG} &      {p} &    {Brier} &      {p} & {NLL (nats)} &      {p} &   {sphere} &      {p} & {zero one} &      {p} \\
+\midrule
+AdaBoost          &  0.93(16)  &  <0.0001 &  0.950(96) &  <0.0001 &  0.90464 &  <0.0001 &  0.42(14)  &  <0.0001 &    0.368(80) &  <0.0001 &  0.36(15)  &  <0.0001 &  0.075(86) &  <0.0001 \\
+Decision Tree     &  0.95(13)  &  <0.0001 &  0.966(70) &  <0.0001 &  0.93860 &  <0.0001 &  0.18(25)  &  <0.0001 &    0.40(71)  &   0.4072 &  0.16(22)  &  <0.0001 &  0.050(71) &  <0.0001 \\
+Gaussian Process  &  0.90(22)  &  <0.0001 &  0.95(12)  &  <0.0001 &  0.92081 &  <0.0001 &  0.27(17)  &  <0.0001 &    0.27(11)  &  <0.0001 &  0.22(16)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+Linear SVM        &  0.952(99) &  <0.0001 &  0.950(77) &  <0.0001 &  0.88705 &  <0.0001 &  0.34(24)  &  <0.0001 &    0.29(16)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.15(12)  &   0.0006 \\
+Naive Bayes       &  0.957(97) &  <0.0001 &  0.957(68) &  <0.0001 &  0.89782 &  <0.0001 &  0.34(25)  &  <0.0001 &    0.28(18)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.13(11)  &   0.0002 \\
+Nearest Neighbors &  0.94(14)  &  <0.0001 &  0.969(69) &  <0.0001 &  0.93498 &  <0.0001 &  0.18(21)  &  <0.0001 &    0.42(70)  &   0.4241 &  0.15(18)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+Neural Net        &  0.957(91) &  <0.0001 &  0.957(69) &  <0.0001 &  0.89782 &  <0.0001 &  0.33(23)  &  <0.0001 &    0.28(15)  &  <0.0001 &  0.30(22)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+QDA               &  0.951(91) &  <0.0001 &  0.950(80) &  <0.0001 &  0.88517 &  <0.0001 &  0.34(27)  &  <0.0001 &    0.29(21)  &   0.0003 &  0.31(25)  &  <0.0001 &  0.15(12)  &   0.0006 \\
+RBF SVM           &  0.93(18)  &  <0.0001 &  0.957(94) &  <0.0001 &  0.92081 &  <0.0001 &  0.14(20)  &  <0.0001 &    0.18(18)  &  <0.0001 &  0.12(17)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+Random Forest     &  0.965(82) &  <0.0001 &  0.949(84) &  <0.0001 &  0.92147 &  <0.0001 &  0.31(26)  &  <0.0001 &    0.52(70)  &   0.6099 &  0.28(24)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &     {--} &  1.004(22) &     {--} &    0.695(11) &     {--} &  1.005(27) &     {--} &  0.53(17)  &     {--} \\
+\bottomrule
+\end{tabular}
+}
+
 
 % Less repetetive, easy to add CIs, stat sig
 % Why useful for challenges
