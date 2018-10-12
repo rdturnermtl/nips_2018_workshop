@@ -75,6 +75,29 @@
 \maketitle
 
 % Motivation
+Rigourous design of machine learning competitions is at least as difficult as rigrouous design of experiments.
+It is an experiment across comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
+Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
+
+% TODO look for citation show frequency
+Surprisingly adding error bars and significance levels has been rarer in machine learning than other parts of science.
+This is somewhat surprising given that machine learning methodology is often based upon statistics.
+Many comptetitions and benchmark data sets follow a plateau like ``leader board'' with big gains at first followed by a long period of very small gains.
+Once these gains become very small and incremental it is easy for these gains to be explainable purely by noise.
+
+One of the obstacles inhibiting widespread use of these statistical methods is tools that introduce minimal time overhead in use.
+Indeed many other areas have tools that standardize the analysis.  % TODO reword
+Benchmark tools is designed to modular.
+However, it can be called in a simple all one call fasion using a dictionary of sklearn compatible objects and a train and test data set.
+The routine will train, test, and benchmark the models on multiple loss functions.
+
+Considering multiple loss functions is a crucuial part of the package.
+Often challenges and analysis are based upon a single somewhat arbitrary loss function; and developers may become obsessed with incremental improvements in a single metric.
+Therefore, we allow a single model to be benchmarked according to multiple metrics.
+However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that can convert a predictive distribution into an action.
+Indeed the classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median.
+This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
+
 % Less repetetive, easy to add CIs, stat sig
 % Why useful for challenges
 
