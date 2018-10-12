@@ -22,6 +22,7 @@
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
+\usepackage{amsmath}
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
@@ -72,6 +73,15 @@
   %% \texttt{email} \\
 }
 
+\renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
+\newcommand{\mat}[1]{{\ensuremath{\mathbf{#1}}}} % matrix
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\sample}{\sim}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
 \newcommand{\code}{\texttt}
 
 \begin{document}
@@ -80,7 +90,7 @@
 \maketitle
 
 % Motivation
-Rigourous design of machine learning competitions is at least as difficult as rigrouous design of experiments.
+Rigourous design of machine learning (ML) competitions is at least as difficult as rigrouous design of experiments.
 It is an experiment across comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
 Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
 
@@ -90,9 +100,9 @@ This is somewhat surprising given that machine learning methodology is often bas
 Many comptetitions and benchmark data sets follow a plateau like ``leader board'' with big gains at first followed by a long period of very small gains.
 Once these gains become very small and incremental it is easy for these gains to be explainable purely by noise.
 
+This paper presents the \emph{benchmark tools} Python package.\footnote{This package is found at
+\url{https://github.com/rdturnermtl/benchmark_tools}}
 One of the obstacles inhibiting widespread use of these statistical methods is tools that introduce minimal time overhead in use.
-Indeed many other areas have tools that standardize the analysis.  % TODO reword
-Benchmark tools is designed to modular.
 However, it can be called in a simple all one call fasion using a dictionary of sklearn compatible objects and a train and test data set.
 The routine will train, test, and benchmark the models on multiple loss functions.
 
@@ -105,7 +115,6 @@ This conversion is done automatically within the package and is essential if one
 
 \section{The interface}
 
-% TODO accro
 Benchmark tools was largely motivated by noticing that on any applied ML project there many repeated ``boilerplate'' code segments that frequently repeat across projects.
 These based upon splitting the data, training the models, testing the models, and doing a benchmark analysis with statistical analysis.
 Also, proper formatting of tables for presentation of the results is also a common repetetive task.
@@ -117,15 +126,17 @@ import benchmark_tools.classification as btc
 from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
 performance_df, performance_curves_dict = \
     btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
-                       STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method)
+                       STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method='iid')
 \end{verbatim}
 This benchmarks all the models in the classifiers dictionary on the data \code{(X\_train, y\_train, X\_test, y\_test)} for 2-class classification.
 It uses the loss function described in the dictionaries \code{STD\_CLASS\_LOSS}, and the curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}.
 \code{ref\_method} defines the model that is the reference to compare against (i.e., for a paired statistical test giving tighter error bars) for assessing statistically significant performance gains.
+We provide an iid dummy model (\code{JustNoise}) that provides constant predictions to serve as a simple baseline.
 The \code{classifiers} dictionary is as simple as:
 \begin{verbatim}
 classifiers = \
-    {'Nearest Neighbors': KNeighborsClassifier(3),
+    {'iid': btc.JustNoise(),
+     'Nearest Neighbors': KNeighborsClassifier(3),
      'Linear SVM': SVC(kernel='linear', C=0.025, probability=True),
      'RBF SVM': SVC(gamma=2, C=1, probability=True),
      ...
@@ -134,8 +145,8 @@ The objects need not be sklearn objects but merely support the methods \code{fit
 Equivalent routines are available in \code{benchmark\_tools.regression} for regression problems.
 
 Although the most convenient way to benchmark is via the ``do-it-all`` \code{just\_benchmark} routine, the package also allows modular access.
-The \code{just\_benchmark} routine works via xxx phases.
-These are (with their corresponding routine): get_pred_log_prob, loss_table, loss_summary_table.
+The \code{just\_benchmark} routine works via three phases.
+These are (with their corresponding routine): \code{get\_pred\_log\_prob}, \code{loss\_table}, \code{loss\_summary\_table}.
 
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
@@ -171,6 +182,18 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 \end{tabular}
 }
 
+% TODO ref good practices
+The sciprint module automatically enforces good practices for presentation of numeric results.
+Sciprint crops the significant figures on the performance number to match the specified number of error digits (with a default of 2 seen above), but values of 1 or 2 are typical.
+The error digits are provided in paranthesises.
+The p-values are limited to specified number of digits (with a default of 4), but values in the range 2--4 are typical.
+The values are correctly aligned at the decimal point.
+To aid in this the package automatically adjusts the exponent of each column (use \code{shift\_mod=3} to ensure a modulus of 3 to enable SI prefixes) to minimize its width for written compactness.
+For this reason, metrics are best used as columns with models as rows, because the scale/units are fixed across metrics.
+
+The package also comes with a \emph{data splitter} module that supports random, ordinal, or temporal splitting across features in pandas dataframes.
+It also allows for jointly splitting across multiple features to test difficult generalization cases (e.g., test set of random unseen users \emph{and} later in time than training)\@.
+
 \section{Loss functions}
 
 Benchmark tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
@@ -184,7 +207,7 @@ Benchmark tools has built in support for general \emph{loss matrices} for hard c
 Non-probalistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}, some of which are already available in sklearn.
 
 Curve summaries are based upon creating a performance curve and then summarizing with a single number.
-The supported performance curves are ROC, precision-recall, and precision-recall-gain.
+The supported performance curves are ROC, precision-recall, and precision-recall-gain. % TODO ref
 We currently only use the summary of area under the curve.
 Great care is taken to ensure these curves and summaries and unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn.  % TODO ref
 
@@ -201,6 +224,12 @@ However, these error bars requires a \emph{bounded loss}, otherwise it result in
 For tighter error bars we support the option \code{pairwise\_CI}, which build the error bars from $\ell_A - \ell_R$ to compare models $A$ to the reference model $R$.
 Since, the errors in two models are often correlated, the pairwise errorbars with be tighter.
 The p-value column always use a paired test to the reference model to construct the p-values.
+% TODO insert eqn for each error bar
+
+The p-values are constructed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bounds.
+The error bars are consistent with each other in the sense that: 
+Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
+% TODO insert eqn
 
 The error bars and significance tests for the curve summaries are produced via bootstrap.
 We a vectorized bootstrap that reweights the data point via a multinomial distribution.
@@ -209,33 +238,11 @@ For example, the MATLAB bootstrap routine takes this approach, but can often be 
 
 \section{conclusions}
 
-% A few sentences on future work
+We have presented a package with utility to be used in many ML challenges and publications.
+The use of one-liner performance tables with error bars and significance levels should make their use universal in ML\@.
+The package still have much potential for expansion beyond classification and regression to more complex tasks such as structured prediction problems.
 
-
-
-
-% Less repetetive, easy to add CIs, stat sig
-% Why useful for challenges
-
-% Workflow: from sklean dict
-% Figure
-
-% Tasks: classificatio and reg
-
-% How math in each works
-% proper scoring rules
-% error bars, and how stat matches
-
-% A note on unit tests
-
-% sciprint
-% principles on correct formatting
-
-% Can copy over examples from README
-
-% refs: proper scoring, AUPRG, bernstein
-% sklearn bug
-
-% include URL
+% refs: proper scoring, AUPRG, bernstein, sklearn bug
 
 \end{document}
+
