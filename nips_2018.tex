@@ -131,7 +131,14 @@ classifiers = \
      ...
 \end{verbatim}
 The objects need not be sklearn objects but merely support the methods \code{fit} and \code{predict\_log\_proba} as per the sklearn interface.
+Equivalent routines are available in \code{benchmark\_tools.regression} for regression problems.
 
+Although the most convenient way to benchmark is via the ``do-it-all`` \code{just\_benchmark} routine, the package also allows modular access.
+The \code{just\_benchmark} routine works via xxx phases.
+These are (with their corresponding routine): get_pred_log_prob, loss_table, loss_summary_table.
+
+The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
+However, for publishable results one must first format it correctly:
 The sciprint module formats these tables for scientific presentation.
 The performance dictionaries can be converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, thresholding huge/small (crap limit) results, and correct alignment of decimal points, units in headers, etc.
 Here we use:
@@ -163,6 +170,48 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 \bottomrule
 \end{tabular}
 }
+
+\section{Loss functions}
+
+Benchmark tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
+From a decision theoretic perspective loss functions are the more justified metric for evaluation; they are also easier to use place confidence intervals on.
+The loss for model $A$ on iid test data with labels $y_{1:N}$ works as:
+\begin{align}
+  L_A = \sum_{i=1}^N \ell_i = \sum_{i=1}^N \ell(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|x_i)}[\ell(y_i, a)]\,,
+\end{align}
+where $a_i$ is the Bayes' optimal action for the loss function $\ell$.
+Benchmark tools has built in support for general \emph{loss matrices} for hard classification, but also also supports the log loss (NLL), Brier score, and sphereical score as \emph{proper scoring rules} to evaluate a models soft predictions.
+Non-probalistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}, some of which are already available in sklearn.
+
+Curve summaries are based upon creating a performance curve and then summarizing with a single number.
+The supported performance curves are ROC, precision-recall, and precision-recall-gain.
+We currently only use the summary of area under the curve.
+Great care is taken to ensure these curves and summaries and unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn.  % TODO ref
+
+\section{Error bars}
+
+Putting error bars on the loss functions are essentially placing an error bar on the mean.
+Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
+Given the individual losses $\ell_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and bernstein bounds.
+The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
+We also use the percentile boostrap to construct the error bars, which still makes some assymptotic assumptions but weaker than the t-test.
+For very conservative error bars, one can use the Bernstein bounds, which is distribution free and holds for finite sample.  % TODO cite
+However, these error bars requires a \emph{bounded loss}, otherwise it result in infinite error bars.
+
+For tighter error bars we support the option \code{pairwise\_CI}, which build the error bars from $\ell_A - \ell_R$ to compare models $A$ to the reference model $R$.
+Since, the errors in two models are often correlated, the pairwise errorbars with be tighter.
+The p-value column always use a paired test to the reference model to construct the p-values.
+
+The error bars and significance tests for the curve summaries are produced via bootstrap.
+We a vectorized bootstrap that reweights the data point via a multinomial distribution.
+This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
+For example, the MATLAB bootstrap routine takes this approach, but can often be slower than training the classifier itself for large data sets.  % TODO ref
+
+\section{conclusions}
+
+% A few sentences on future work
+
+
 
 
 % Less repetetive, easy to add CIs, stat sig
