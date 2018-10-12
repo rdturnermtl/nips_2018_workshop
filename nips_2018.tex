@@ -227,7 +227,8 @@ The p-value column always use a paired test to the reference model to construct 
 % TODO insert eqn for each error bar
 
 The p-values are constructed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bounds.
-The error bars are consistent with each other in the sense that: 
+% TODO fix notation
+The confidence interval $(U,L)$ on $L_A - L_R$ and p-value $p$ (on $H_0$: $L_A = L_R$) are designed to be consistent with each other in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
 Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
 % TODO insert eqn
 
@@ -242,7 +243,9 @@ We have presented a package with utility to be used in many ML challenges and pu
 The use of one-liner performance tables with error bars and significance levels should make their use universal in ML\@.
 The package still have much potential for expansion beyond classification and regression to more complex tasks such as structured prediction problems.
 
-% refs: proper scoring, AUPRG, bernstein, sklearn bug
+% TODO acks
+
+% TODO refs: proper scoring, AUPRG, bernstein, sklearn bug
 
 \end{document}
 
