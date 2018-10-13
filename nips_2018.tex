@@ -75,7 +75,7 @@ Rigorous design of machine learning (ML) challenges is at least as difficult as 
 Challenges are experiments comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
 Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
 
-Surprisingly adding error bars and significance levels has been rarer in machine learning than other parts of science.
+Surprisingly error bars and significance levels are rarer in machine learning than other parts of science.
 This is somewhat surprising given that machine learning methodology is often based upon statistics.
 Many challenges and benchmark data sets follow a plateau like ``leaderboard'' with big gains at first followed by a long period of very small gains.
 Once these gains become very small and incremental, these gains are often explainable purely by sampling noise.
@@ -128,7 +128,7 @@ Equivalent routines are available in \code{benchmark\_tools.regression} for regr
 
 Although the most convenient way to benchmark is via the ``do-it-all'' \code{just\_benchmark} routine, the package also allows modular usage.
 The \code{just\_benchmark} routine works via three phases.
-These are (with their corresponding routine) build dataframe of: predictive distributions on each test point and model \code{get\_pred\_log\_prob}, the losses for each prediction \code{loss\_table}, mean loss for each method along with error bars and p-values \code{loss\_summary\_table}.
+These are (with their corresponding routine) to build dataframe of: predictive distributions on each test point and model \code{get\_pred\_log\_prob}, the losses for each prediction \code{loss\_table}, mean loss for each method along with error bars and p-values \code{loss\_summary\_table}.
 
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
@@ -176,7 +176,7 @@ It also allows for jointly splitting across multiple features to test difficult 
 \section{Loss functions}
 
 Benchmark tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
-From a decision theoretic perspective loss functions are the more justified metric for evaluation; they are also easier to use place confidence intervals on.
+From a decision theoretic perspective loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
 The loss for model $A$ on iid test data with labels $y_{1:N}$ works as:
 \begin{align}
   \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]\,,
