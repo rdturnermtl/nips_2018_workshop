@@ -130,6 +130,7 @@ Equivalent routines are available in \code{benchmark\_tools.regression} for regr
 Although the most convenient way to benchmark is via the ``do-it-all'' \code{just\_benchmark} routine, the package also allows modular usage of \code{just\_benchmark}'s three phases.
 This allows for building a dataframe of: predictive distributions on each test point and model (\code{get\_pred\_log\_prob}), the losses for each prediction (\code{loss\_table}), and the mean loss for each method along with error bars and p-values (\code{loss\_summary\_table})\@.
 
+\paragraph{Sciprint}
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
 The \emph{sciprint} module formats these tables for scientific presentation~\citep{Cole2015}.
@@ -210,6 +211,7 @@ The confidence interval $(U,L)$ on $\Delta \Loss := \Loss_A - \Loss_R$ and p-val
 Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
 % Would be good to use p-val eqns but just no space
 
+\paragraph{Significance tests}
 The error bars and significance tests for the curve summaries are produced via bootstrap~\citep{Efron1994}.
 We built a vectorized bootstrap that reweights the data points via a multinomial distribution.
 This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
