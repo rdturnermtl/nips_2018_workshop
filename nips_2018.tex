@@ -30,7 +30,7 @@
 \usepackage{booktabs}
 \usepackage{siunitx}
 
-\title{Formatting instructions for NIPS 2018}
+\title{The Machine Learning Benchmark Tools Package}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -43,34 +43,8 @@
 % author name.
 
 \author{
-  David S.~Hippocampus\thanks{Use footnote for providing further
-    information about author (webpage, alternative
-    address)---\emph{not} for acknowledging funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
-  %% examples of more authors
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \AND
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
+  Ryan Turner \\
+  Uber AI Labs
 }
 
 \renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
@@ -84,6 +58,11 @@
 
 \newcommand{\code}{\texttt}
 
+% TODO
+% it is, can, whitespace, spelling
+% package name
+% compress
+
 \begin{document}
 % \nipsfinalcopy is no longer used
 
@@ -94,24 +73,24 @@ Rigourous design of machine learning (ML) competitions is at least as difficult 
 It is an experiment across comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
 Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
 
-% TODO look for citation show frequency
 Surprisingly adding error bars and significance levels has been rarer in machine learning than other parts of science.
 This is somewhat surprising given that machine learning methodology is often based upon statistics.
 Many comptetitions and benchmark data sets follow a plateau like ``leader board'' with big gains at first followed by a long period of very small gains.
 Once these gains become very small and incremental it is easy for these gains to be explainable purely by noise.
 
 This paper presents the \emph{benchmark tools} Python package.\footnote{This package is found at
-\url{https://github.com/rdturnermtl/benchmark_tools}}
+\url{https://github.com/rdturnermtl/benchmark_tools}.}
 One of the obstacles inhibiting widespread use of these statistical methods is tools that introduce minimal time overhead in use.
-However, it can be called in a simple all one call fasion using a dictionary of sklearn compatible objects and a train and test data set.
+However, it can be called in a simple all one call fasion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and a train and test data set.
 The routine will train, test, and benchmark the models on multiple loss functions.
 
 Considering multiple loss functions is a crucuial part of the package.
 Often challenges and analysis are based upon a single somewhat arbitrary loss function; and developers may become obsessed with incremental improvements in a single metric.
 Therefore, we allow a single model to be benchmarked according to multiple metrics.
 However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that can convert a predictive distribution into an action.
-Indeed the classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median.
+Indeed the classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median~\citep{Marchini2013}.
 This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
+The classification benchmark can build loss functions with arbitrary loss matrices; this allows for probabilistic predictions to be converted to a ``don't know'' option and evaluated.
 
 \section{The interface}
 
@@ -150,14 +129,12 @@ These are (with their corresponding routine): \code{get\_pred\_log\_prob}, \code
 
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
-The sciprint module formats these tables for scientific presentation.
-The performance dictionaries can be converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, thresholding huge/small (crap limit) results, and correct alignment of decimal points, units in headers, etc.
+The sciprint module formats these tables for scientific presentation~\citep{Cole2015}.
+The performance dictionaries can be converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, and correct alignment of decimal points, units in headers, etc.
 Here we use:
 \begin{verbatim}
 import benchmark_tools.sciprint as sp
 print sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
-                        crap_limit_min={'AUPRG': -1},
-                        EB_limit={'AUPRG': -1},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True)
 \end{verbatim}
 Both plain text and \LaTeX tables are available via the \code{use\_tex} argument.
@@ -182,7 +159,6 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 \end{tabular}
 }
 
-% TODO ref good practices
 The sciprint module automatically enforces good practices for presentation of numeric results.
 Sciprint crops the significant figures on the performance number to match the specified number of error digits (with a default of 2 seen above), but values of 1 or 2 are typical.
 The error digits are provided in paranthesises.
@@ -203,49 +179,52 @@ The loss for model $A$ on iid test data with labels $y_{1:N}$ works as:
   L_A = \sum_{i=1}^N \ell_i = \sum_{i=1}^N \ell(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|x_i)}[\ell(y_i, a)]\,,
 \end{align}
 where $a_i$ is the Bayes' optimal action for the loss function $\ell$.
-Benchmark tools has built in support for general \emph{loss matrices} for hard classification, but also also supports the log loss (NLL), Brier score, and sphereical score as \emph{proper scoring rules} to evaluate a models soft predictions.
-Non-probalistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}, some of which are already available in sklearn.
+Benchmark tools has built in support for general \emph{loss matrices} for hard classification, but also also supports the log loss (NLL), Brier score, and sphereical score as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a models soft predictions.
+The modular system is extendable allowing for new metrics to be easily added.
+Non-probalistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}~\citep{Platt1999,Kull2017}, some of which are already available in sklearn.
 
 Curve summaries are based upon creating a performance curve and then summarizing with a single number.
-The supported performance curves are ROC, precision-recall, and precision-recall-gain. % TODO ref
-We currently only use the summary of area under the curve.
-Great care is taken to ensure these curves and summaries and unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn.  % TODO ref
+The supported performance curves are ROC, precision-recall, and precision-recall-gain~\citep{Flach2015}.
+We currently only use the summary of area under the curve (AUC)\@.
+Great care is taken to ensure these curves and summaries and unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
 
 \section{Error bars}
 
 Putting error bars on the loss functions are essentially placing an error bar on the mean.
 Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
-Given the individual losses $\ell_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and bernstein bounds.
+Given the individual losses $\ell_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bounds.
 The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
 We also use the percentile boostrap to construct the error bars, which still makes some assymptotic assumptions but weaker than the t-test.
-For very conservative error bars, one can use the Bernstein bounds, which is distribution free and holds for finite sample.  % TODO cite
+For very conservative error bars, one can use the Bernstein bounds, which is distribution free and holds for finite sample~\citep{Audibert2009}.
 However, these error bars requires a \emph{bounded loss}, otherwise it result in infinite error bars.
 
 For tighter error bars we support the option \code{pairwise\_CI}, which build the error bars from $\ell_A - \ell_R$ to compare models $A$ to the reference model $R$.
 Since, the errors in two models are often correlated, the pairwise errorbars with be tighter.
 The p-value column always use a paired test to the reference model to construct the p-values.
-% TODO insert eqn for each error bar
+% Would be good to put in CI eqns but just no space
 
 The p-values are constructed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bounds.
 % TODO fix notation
-The confidence interval $(U,L)$ on $L_A - L_R$ and p-value $p$ (on $H_0$: $L_A = L_R$) are designed to be consistent with each other in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
+The confidence interval $(U,L)$ on $\Delta L := L_A - L_R$ and p-value $p$ (on $H_0$:~$L_A = L_R$) are designed to be coherent in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
 Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
-% TODO insert eqn
+% Would be good to use p-val eqns but just no space
 
-The error bars and significance tests for the curve summaries are produced via bootstrap.
+The error bars and significance tests for the curve summaries are produced via bootstrap~\citep{Efron1994}.
 We a vectorized bootstrap that reweights the data point via a multinomial distribution.
 This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
-For example, the MATLAB bootstrap routine takes this approach, but can often be slower than training the classifier itself for large data sets.  % TODO ref
+For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and can often be slower than training the classifier itself for large data sets. 
 
-\section{conclusions}
+\section{Conclusions}
 
 We have presented a package with utility to be used in many ML challenges and publications.
 The use of one-liner performance tables with error bars and significance levels should make their use universal in ML\@.
 The package still have much potential for expansion beyond classification and regression to more complex tasks such as structured prediction problems.
 
-% TODO acks
+\paragraph{Acknowledgments}
+We thank Riashat Islam for setting up continuous integration testing for the benchmark tools package.
 
-% TODO refs: proper scoring, AUPRG, bernstein, sklearn bug
+\bibliographystyle{abbrvnat}
+\bibliography{btpaper} % References file
 
 \end{document}
 
