@@ -138,8 +138,8 @@ Here we use:
 \vspace{-3mm}
 \begin{verbatim}
 import benchmark_tools.sciprint as sp
-print sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
-                        non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True)
+print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
+                        non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True))
 \end{verbatim}
 \vspace{-3mm}
 Both plain text and \LaTeX\ tables are available via the \code{use\_tex} argument.
@@ -151,16 +151,16 @@ The above snippet produces the \LaTeX\ table:
 \toprule
 {}                &       {AP} &      {p} &      {AUC} &      {p} &  {AUPRG} &      {p} &    {Brier} &      {p} & {NLL (nats)} &      {p} &   {sphere} &      {p} & {zero one} &      {p} \\
 \midrule
-AdaBoost          &  0.93(16)  &  <0.0001 &  0.950(96) &  <0.0001 &  0.90464 &  <0.0001 &  0.42(14)  &  <0.0001 &    0.368(80) &  <0.0001 &  0.36(15)  &  <0.0001 &  0.075(86) &  <0.0001 \\
-Decision Tree     &  0.95(13)  &  <0.0001 &  0.966(70) &  <0.0001 &  0.93860 &  <0.0001 &  0.18(25)  &  <0.0001 &    0.40(71)  &   0.4072 &  0.16(22)  &  <0.0001 &  0.050(71) &  <0.0001 \\
-Gaussian Process  &  0.90(22)  &  <0.0001 &  0.95(12)  &  <0.0001 &  0.92081 &  <0.0001 &  0.27(17)  &  <0.0001 &    0.27(11)  &  <0.0001 &  0.22(16)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+%AdaBoost          &  0.93(16)  &  <0.0001 &  0.950(96) &  <0.0001 &  0.90464 &  <0.0001 &  0.42(14)  &  <0.0001 &    0.368(80) &  <0.0001 &  0.36(15)  &  <0.0001 &  0.075(86) &  <0.0001 \\
+%Decision Tree     &  0.95(13)  &  <0.0001 &  0.966(70) &  <0.0001 &  0.93860 &  <0.0001 &  0.18(25)  &  <0.0001 &    0.40(71)  &   0.4072 &  0.16(22)  &  <0.0001 &  0.050(71) &  <0.0001 \\
+%Gaussian Process  &  0.90(22)  &  <0.0001 &  0.95(12)  &  <0.0001 &  0.92081 &  <0.0001 &  0.27(17)  &  <0.0001 &    0.27(11)  &  <0.0001 &  0.22(16)  &  <0.0001 &  0.025(51) &  <0.0001 \\
 Linear SVM        &  0.952(99) &  <0.0001 &  0.950(77) &  <0.0001 &  0.88705 &  <0.0001 &  0.34(24)  &  <0.0001 &    0.29(16)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.15(12)  &   0.0006 \\
-Naive Bayes       &  0.957(97) &  <0.0001 &  0.957(68) &  <0.0001 &  0.89782 &  <0.0001 &  0.34(25)  &  <0.0001 &    0.28(18)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.13(11)  &   0.0002 \\
+%Naive Bayes       &  0.957(97) &  <0.0001 &  0.957(68) &  <0.0001 &  0.89782 &  <0.0001 &  0.34(25)  &  <0.0001 &    0.28(18)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.13(11)  &   0.0002 \\
 Nearest Neighbors &  0.94(14)  &  <0.0001 &  0.969(69) &  <0.0001 &  0.93498 &  <0.0001 &  0.18(21)  &  <0.0001 &    0.42(70)  &   0.4241 &  0.15(18)  &  <0.0001 &  0.025(51) &  <0.0001 \\
-Neural Net        &  0.957(91) &  <0.0001 &  0.957(69) &  <0.0001 &  0.89782 &  <0.0001 &  0.33(23)  &  <0.0001 &    0.28(15)  &  <0.0001 &  0.30(22)  &  <0.0001 &  0.100(98) &  <0.0001 \\
-QDA               &  0.951(91) &  <0.0001 &  0.950(80) &  <0.0001 &  0.88517 &  <0.0001 &  0.34(27)  &  <0.0001 &    0.29(21)  &   0.0003 &  0.31(25)  &  <0.0001 &  0.15(12)  &   0.0006 \\
+%Neural Net        &  0.957(91) &  <0.0001 &  0.957(69) &  <0.0001 &  0.89782 &  <0.0001 &  0.33(23)  &  <0.0001 &    0.28(15)  &  <0.0001 &  0.30(22)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+%QDA               &  0.951(91) &  <0.0001 &  0.950(80) &  <0.0001 &  0.88517 &  <0.0001 &  0.34(27)  &  <0.0001 &    0.29(21)  &   0.0003 &  0.31(25)  &  <0.0001 &  0.15(12)  &   0.0006 \\
 RBF SVM           &  0.93(18)  &  <0.0001 &  0.957(94) &  <0.0001 &  0.92081 &  <0.0001 &  0.14(20)  &  <0.0001 &    0.18(18)  &  <0.0001 &  0.12(17)  &  <0.0001 &  0.025(51) &  <0.0001 \\
-Random Forest     &  0.965(82) &  <0.0001 &  0.949(84) &  <0.0001 &  0.92147 &  <0.0001 &  0.31(26)  &  <0.0001 &    0.52(70)  &   0.6099 &  0.28(24)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+%Random Forest     &  0.965(82) &  <0.0001 &  0.949(84) &  <0.0001 &  0.92147 &  <0.0001 &  0.31(26)  &  <0.0001 &    0.52(70)  &   0.6099 &  0.28(24)  &  <0.0001 &  0.100(98) &  <0.0001 \\
 iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &     {--} &  1.004(22) &     {--} &    0.695(11) &     {--} &  1.005(27) &     {--} &  0.53(17)  &     {--} \\
 \bottomrule
 \end{tabular}
@@ -200,9 +200,9 @@ The t-test is fairly standard, but makes a central limit assumption that the err
 The percentile bootstrap still makes some asymptotic assumptions but weaker than the t-test.
 For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample~\citep{Audibert2009}, but requires a \emph{bounded loss}; otherwise, it results in infinite error bars.
 
-For tighter error bars we support the option \code{pairwise\_CI}, which builds the error bars from $\loss_A - \loss_R$ to compare model $A$ to the reference model $R$.
-Since, the errors in two models are often correlated, the pairwise error bars will be tighter.
-The p-value column always uses a paired test to the reference model $R$ to construct the p-values.
+%For tighter error bars we support the option \code{pairwise\_CI}, which builds the error bars from $\loss_A - \loss_R$ to compare model $A$ to the reference model $R$.
+%Since, the errors in two models are often correlated, the pairwise error bars will be tighter.
+%The p-value column always uses a paired test to the reference model $R$ to construct the p-values.
 % Would be good to put in CI eqns but just no space
 
 The p-values are designed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bound.
