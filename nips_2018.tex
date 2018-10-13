@@ -71,13 +71,13 @@
 \maketitle
 
 % Motivation
-Rigorous design of machine learning (ML) competitions is at least as difficult as rigorous design of experiments.
+Rigorous design of machine learning (ML) challenges is at least as difficult as rigorous design of experiments.
 Challenges are experiments comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
 Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
 
 Surprisingly adding error bars and significance levels has been rarer in machine learning than other parts of science.
 This is somewhat surprising given that machine learning methodology is often based upon statistics.
-Many competitions and benchmark data sets follow a plateau like ``leaderboard'' with big gains at first followed by a long period of very small gains.
+Many challenges and benchmark data sets follow a plateau like ``leaderboard'' with big gains at first followed by a long period of very small gains.
 Once these gains become very small and incremental, these gains are often explainable purely by sampling noise.
 
 This paper presents the \emph{benchmark tools} Python package.\footnote{This package is found at
@@ -85,11 +85,12 @@ This paper presents the \emph{benchmark tools} Python package.\footnote{This pac
 One of the obstacles inhibiting widespread error analysis is a shortage of tools that introduce minimal time overhead in use.
 Benchmark tools is usable in a simple one-liner fashion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011}, along with a train and test data set.
 The routine will train, test, and benchmark the models on multiple loss functions.
+Individual pieces of this process are usable in a modular way.
 
 Considering multiple loss functions is a crucial part of benchmark tools.
 Often challenges and analysis are based upon a single (somewhat arbitrary) loss function; and ML developers often become obsessed with incremental improvements in a single metric.
 Therefore, we allow a single model to be benchmarked according to multiple metrics.
-However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that converts a predictive distribution into an \emph{action}.
+However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that converts a predictive distribution into a different \emph{action} for each loss function.
 The classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median~\citep{Marchini2013}.
 This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
 The classification benchmark can build loss functions with arbitrary loss matrices; this allows, for example, probabilistic predictions to be converted to a ``don't know'' option and evaluated.
@@ -131,7 +132,7 @@ These are (with their corresponding routine) build dataframe of: predictive dist
 
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
-The sciprint module formats these tables for scientific presentation~\citep{Cole2015}.
+The \emph{sciprint} module formats these tables for scientific presentation~\citep{Cole2015}.
 The performance dataframe is converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, and correct alignment of decimal points, units in headers, etc.
 Here we use:
 \begin{verbatim}
@@ -188,7 +189,7 @@ Non-probabilistic methods are still usable within this framework by ``pipelining
 Curve summaries are based upon creating a performance curve and then summarizing with a single number.
 The supported performance curves are ROC, precision-recall, and precision-recall-gain~\citep{Flach2015}.
 We currently only use the summary of area under the curve (AUC)\@.
-Great care is taken to ensure these curves and summaries and unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
+Great care is taken to ensure these curves and summaries are unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
 
 \section{Error bars}
 
@@ -198,14 +199,14 @@ Given the individual losses $\loss_{1:N}$, we support three methods for confiden
 The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
 We also use the percentile bootstrap to construct the error bars, which still makes some asymptotic assumptions but weaker than the t-test.
 For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample~\citep{Audibert2009}.
-However, these error bars requires a \emph{bounded loss}, otherwise it result in infinite error bars.
+However, these error bars requires a \emph{bounded loss}, otherwise it results in infinite error bars.
 
 For tighter error bars we support the option \code{pairwise\_CI}, which builds the error bars from $\loss_A - \loss_R$ to compare model $A$ to the reference model $R$.
 Since, the errors in two models are often correlated, the pairwise error bars will be tighter.
 The p-value column always uses a paired test to the reference model $R$ to construct the p-values.
 % Would be good to put in CI eqns but just no space
 
-The p-values are constructed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bound.
+The p-values are designed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bound.
 The confidence interval $(U,L)$ on $\Delta \Loss := \Loss_A - \Loss_R$ and p-value $p$ (on $H_0$:~$\Loss_A = \Loss_R$) are designed to be coherent in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
 Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
 % Would be good to use p-val eqns but just no space
