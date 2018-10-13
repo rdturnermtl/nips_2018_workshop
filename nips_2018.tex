@@ -127,9 +127,8 @@ classifiers = {'iid': btc.JustNoise(),
 The objects need not be sklearn objects but merely support the methods \code{fit} and \code{predict\_log\_proba} as per the sklearn interface.
 Equivalent routines are available in \code{benchmark\_tools.regression} for regression problems.
 
-Although the most convenient way to benchmark is via the ``do-it-all'' \code{just\_benchmark} routine, the package also allows modular usage.
-The \code{just\_benchmark} routine works via three phases.
-These are (with their corresponding routine) to build dataframe of: predictive distributions on each test point and model \code{get\_pred\_log\_prob}, the losses for each prediction \code{loss\_table}, mean loss for each method along with error bars and p-values \code{loss\_summary\_table}.
+Although the most convenient way to benchmark is via the ``do-it-all'' \code{just\_benchmark} routine, the package also allows modular usage of \code{just\_benchmark}'s three phases.
+This allows for building a dataframe of: predictive distributions on each test point and model (\code{get\_pred\_log\_prob}), the losses for each prediction (\code{loss\_table}), and the mean loss for each method along with error bars and p-values (\code{loss\_summary\_table})\@.
 
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
@@ -168,12 +167,11 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 }
 \end{center}
 The sciprint module automatically enforces good practices for presentation of numeric results.
-Sciprint crops the significant figures on the performance number to match the specified number of error digits (with a default of 2 seen above), but values of 1 or 2 are typical.
-The error digits are provided in parentheses.
-The p-values are limited to specified number of digits (with a default of 4), but values in the range 2--4 are typical.
-The values are correctly aligned at the decimal point.
-To aid in this, the package automatically adjusts the exponent of each column (use \code{shift\_mod=3} to ensure a modulus of 3 to enable SI prefixes) to minimize its width for written compactness.
-For this reason, metrics are best used as columns with models as rows, because the scale/units are fixed across metrics.
+Sciprint crops the significant figures on the performance number to match the specified number of error digits.
+The p-values are limited to specified number of digits.
+%The values are correctly aligned at the decimal point.
+The package even automatically adjusts the exponent of each column to minimize its width for written compactness.
+%For this reason, metrics are best used as columns with models as rows, because the scale/units are fixed across metrics.
 
 The package also comes with a \emph{data splitter} module that supports random, ordinal, or temporal splitting across features in pandas dataframes.
 It also allows for jointly splitting across multiple features to test difficult generalization cases (e.g., test set of random unseen users \emph{and} later in time than training)\@.
@@ -181,30 +179,28 @@ It also allows for jointly splitting across multiple features to test difficult 
 \section{Loss functions}
 
 Benchmark Tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
-From a decision theoretic perspective loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
-The loss for model $A$ on iid test data with labels $y_{1:N}$ works as:
+From a decision theoretic perspective, loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
+The loss for model $A$ on iid test data with labels $y_{1:N}$ works as
 \begin{align}
   \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]\,,
 \end{align}
 where $a_i$ is the Bayes' optimal action for the loss function $\loss$.
-Benchmark Tools has built-in support for general \emph{loss matrices} for hard classification, but also also supports the log loss (NLL), Brier loss, and spherical loss as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a models' soft predictions.
-The modular system is extendable allowing for new metrics to be easily added.
-Non-probabilistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}~\citep{Kull2017,Platt1999}, some of which are already available in sklearn.
+Benchmark Tools has built-in support for general \emph{loss matrices} for hard classification but also supports the log loss (NLL), Brier loss, and spherical loss as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a model's soft predictions.
+The modular system is extendable, allowing for new metrics to be easily added.
+Non-probabilistic methods are usable by ``pipelining'' with a \emph{calibrator}~\citep{Kull2017,Platt1999}, some of which are in sklearn.
 
-Curve summaries are based upon creating a performance curve and then summarizing with a single number.
-The supported performance curves are ROC, precision-recall, and precision-recall-gain~\citep{Flach2015}.
-We currently only use the summary of area under the curve (AUC)\@.
+Curve summaries create a performance curve and then summarize with a single number.
+We support ROC, precision-recall, and precision-recall-gain~\citep{Flach2015} curves.
 Great care is taken to ensure these curves and summaries are unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
 
 \section{Error bars}
 
-Putting error bars on the loss functions are essentially placing an error bar on the mean of $\loss$.
+Putting error bars on the loss functions is essentially placing an error bar on the mean of $\loss$.
 Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
 Given the individual losses $\loss_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bound.
 The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
-We also use the percentile bootstrap to construct the error bars, which still makes some asymptotic assumptions but weaker than the t-test.
-For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample~\citep{Audibert2009}.
-However, these error bars requires a \emph{bounded loss}, otherwise it results in infinite error bars.
+The percentile bootstrap still makes some asymptotic assumptions but weaker than the t-test.
+For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample~\citep{Audibert2009}, but requires a \emph{bounded loss}; otherwise, it results in infinite error bars.
 
 For tighter error bars we support the option \code{pairwise\_CI}, which builds the error bars from $\loss_A - \loss_R$ to compare model $A$ to the reference model $R$.
 Since, the errors in two models are often correlated, the pairwise error bars will be tighter.
