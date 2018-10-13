@@ -60,7 +60,7 @@
 \newcommand{\code}{\texttt}
 
 % TODO
-% it is, can, whitespace, spelling
+% whitespace, spelling
 % package name
 % compress
 
@@ -71,24 +71,24 @@
 
 % Motivation
 Rigourous design of machine learning (ML) competitions is at least as difficult as rigrouous design of experiments.
-It is an experiment across comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
+Challenges are experiments comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
 Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
 
 Surprisingly adding error bars and significance levels has been rarer in machine learning than other parts of science.
 This is somewhat surprising given that machine learning methodology is often based upon statistics.
 Many comptetitions and benchmark data sets follow a plateau like ``leader board'' with big gains at first followed by a long period of very small gains.
-Once these gains become very small and incremental it is easy for these gains to be explainable purely by noise.
+Once these gains become very small and incremental, these gains are often explainable purely by sampling noise.
 
 This paper presents the \emph{benchmark tools} Python package.\footnote{This package is found at
 \url{https://github.com/rdturnermtl/benchmark_tools}.}
 One of the obstacles inhibiting widespread use of these statistical methods is tools that introduce minimal time overhead in use.
-However, it can be called in a simple all one call fasion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and a train and test data set.
+However, it is callable in a simple all-in-one call fasion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and a train and test data set.
 The routine will train, test, and benchmark the models on multiple loss functions.
 
 Considering multiple loss functions is a crucuial part of the package.
 Often challenges and analysis are based upon a single somewhat arbitrary loss function; and developers may become obsessed with incremental improvements in a single metric.
 Therefore, we allow a single model to be benchmarked according to multiple metrics.
-However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that can convert a predictive distribution into an action.
+However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that converts a predictive distribution into an action.
 Indeed the classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median~\citep{Marchini2013}.
 This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
 The classification benchmark can build loss functions with arbitrary loss matrices; this allows for probabilistic predictions to be converted to a ``don't know'' option and evaluated.
@@ -131,7 +131,7 @@ These are (with their corresponding routine): \code{get\_pred\_log\_prob}, \code
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
 However, for publishable results one must first format it correctly:
 The sciprint module formats these tables for scientific presentation~\citep{Cole2015}.
-The performance dictionaries can be converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, and correct alignment of decimal points, units in headers, etc.
+The performance dataframe is converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, and correct alignment of decimal points, units in headers, etc.
 Here we use:
 \begin{verbatim}
 import benchmark_tools.sciprint as sp
@@ -196,7 +196,7 @@ Note this places a confidence interval on what the performance would be on a new
 Given the individual losses $\ell_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bounds.
 The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
 We also use the percentile boostrap to construct the error bars, which still makes some assymptotic assumptions but weaker than the t-test.
-For very conservative error bars, one can use the Bernstein bounds, which is distribution free and holds for finite sample~\citep{Audibert2009}.
+For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample~\citep{Audibert2009}.
 However, these error bars requires a \emph{bounded loss}, otherwise it result in infinite error bars.
 
 For tighter error bars we support the option \code{pairwise\_CI}, which build the error bars from $\ell_A - \ell_R$ to compare models $A$ to the reference model $R$.
@@ -213,7 +213,7 @@ Construction of p-values from the t-test and bootstrap are standard, but Bernste
 The error bars and significance tests for the curve summaries are produced via bootstrap~\citep{Efron1994}.
 We a vectorized bootstrap that reweights the data point via a multinomial distribution.
 This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
-For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and can often be slower than training the classifier itself for large data sets. 
+For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets. 
 
 \section{Conclusions}
 
