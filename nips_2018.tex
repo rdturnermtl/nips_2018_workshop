@@ -70,22 +70,22 @@
 \maketitle
 
 % Motivation
-Rigourous design of machine learning (ML) competitions is at least as difficult as rigrouous design of experiments.
+Rigorous design of machine learning (ML) competitions is at least as difficult as rigorous design of experiments.
 Challenges are experiments comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
 Part of experimental design involves proper analysis with confidence intervals (error bars) and statistical tests.
 
 Surprisingly adding error bars and significance levels has been rarer in machine learning than other parts of science.
 This is somewhat surprising given that machine learning methodology is often based upon statistics.
-Many comptetitions and benchmark data sets follow a plateau like ``leader board'' with big gains at first followed by a long period of very small gains.
+Many competitions and benchmark data sets follow a plateau like ``leaderboard'' with big gains at first followed by a long period of very small gains.
 Once these gains become very small and incremental, these gains are often explainable purely by sampling noise.
 
 This paper presents the \emph{benchmark tools} Python package.\footnote{This package is found at
 \url{https://github.com/rdturnermtl/benchmark_tools}.}
 One of the obstacles inhibiting widespread use of these statistical methods is tools that introduce minimal time overhead in use.
-However, it is callable in a simple all-in-one call fasion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and a train and test data set.
+However, it is callable in a simple all-in-one call fashion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and a train and test data set.
 The routine will train, test, and benchmark the models on multiple loss functions.
 
-Considering multiple loss functions is a crucuial part of the package.
+Considering multiple loss functions is a crucial part of the package.
 Often challenges and analysis are based upon a single somewhat arbitrary loss function; and developers may become obsessed with incremental improvements in a single metric.
 Therefore, we allow a single model to be benchmarked according to multiple metrics.
 However, a crucial piece of this is that the benchmark tools package supports the Bayes' decision rule calculation that converts a predictive distribution into an action.
@@ -97,7 +97,7 @@ The classification benchmark can build loss functions with arbitrary loss matric
 
 Benchmark tools was largely motivated by noticing that on any applied ML project there many repeated ``boilerplate'' code segments that frequently repeat across projects.
 These based upon splitting the data, training the models, testing the models, and doing a benchmark analysis with statistical analysis.
-Also, proper formatting of tables for presentation of the results is also a common repetetive task.
+Also, proper formatting of tables for presentation of the results is also a common repetitive task.
 
 The high level interface of the package has just two phases: \code{just\_benchmark} and \code{just\_format\_it}.
 These work as follows:	
@@ -162,7 +162,7 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 
 The sciprint module automatically enforces good practices for presentation of numeric results.
 Sciprint crops the significant figures on the performance number to match the specified number of error digits (with a default of 2 seen above), but values of 1 or 2 are typical.
-The error digits are provided in paranthesises.
+The error digits are provided in parentheses.
 The p-values are limited to specified number of digits (with a default of 4), but values in the range 2--4 are typical.
 The values are correctly aligned at the decimal point.
 To aid in this the package automatically adjusts the exponent of each column (use \code{shift\_mod=3} to ensure a modulus of 3 to enable SI prefixes) to minimize its width for written compactness.
@@ -180,9 +180,9 @@ The loss for model $A$ on iid test data with labels $y_{1:N}$ works as:
   L_A = \sum_{i=1}^N \ell_i = \sum_{i=1}^N \ell(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|x_i)}[\ell(y_i, a)]\,,
 \end{align}
 where $a_i$ is the Bayes' optimal action for the loss function $\ell$.
-Benchmark tools has built in support for general \emph{loss matrices} for hard classification, but also also supports the log loss (NLL), Brier score, and sphereical score as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a models soft predictions.
+Benchmark tools has built in support for general \emph{loss matrices} for hard classification, but also also supports the log loss (NLL), Brier score, and spherical score as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a models soft predictions.
 The modular system is extendable allowing for new metrics to be easily added.
-Non-probalistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}~\citep{Platt1999,Kull2017}, some of which are already available in sklearn.
+Non-probabilistic methods are still usable within this framework by ``pipelining'' with a \emph{calibrator}~\citep{Platt1999,Kull2017}, some of which are already available in sklearn.
 
 Curve summaries are based upon creating a performance curve and then summarizing with a single number.
 The supported performance curves are ROC, precision-recall, and precision-recall-gain~\citep{Flach2015}.
@@ -195,12 +195,12 @@ Putting error bars on the loss functions are essentially placing an error bar on
 Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
 Given the individual losses $\ell_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bounds.
 The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
-We also use the percentile boostrap to construct the error bars, which still makes some assymptotic assumptions but weaker than the t-test.
+We also use the percentile bootstrap to construct the error bars, which still makes some asymptotic assumptions but weaker than the t-test.
 For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample~\citep{Audibert2009}.
 However, these error bars requires a \emph{bounded loss}, otherwise it result in infinite error bars.
 
 For tighter error bars we support the option \code{pairwise\_CI}, which build the error bars from $\ell_A - \ell_R$ to compare models $A$ to the reference model $R$.
-Since, the errors in two models are often correlated, the pairwise errorbars with be tighter.
+Since, the errors in two models are often correlated, the pairwise error bars with be tighter.
 The p-value column always use a paired test to the reference model to construct the p-values.
 % Would be good to put in CI eqns but just no space
 
