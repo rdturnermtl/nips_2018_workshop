@@ -70,6 +70,8 @@
 
 \maketitle
 
+\vspace{-5mm}
+
 % Motivation
 Rigorous design of machine learning (ML) challenges is at least as difficult as rigorous design of experiments.
 Challenges are experiments comparing multiple machine learning algorithms (possibly with adversarial agents)\@.
@@ -141,8 +143,10 @@ print sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True)
 \end{verbatim}
 Both plain text and \LaTeX\ tables are available via the \code{use\_tex} argument.
-The above snippet produces the \LaTeX\ table:\\
+The above snippet produces the \LaTeX\ table:
+\begin{center}
 {\tiny
+\setlength{\tabcolsep}{0.75em} % for the horizontal padding
 \begin{tabular}{|l|l|r|l|r|l|r|l|r|l|r|l|r|l|r|}
 \toprule
 {}                &       {AP} &      {p} &      {AUC} &      {p} &  {AUPRG} &      {p} &    {Brier} &      {p} & {NLL (nats)} &      {p} &   {sphere} &      {p} & {zero one} &      {p} \\
@@ -161,7 +165,7 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 \bottomrule
 \end{tabular}
 }
-
+\end{center}
 The sciprint module automatically enforces good practices for presentation of numeric results.
 Sciprint crops the significant figures on the performance number to match the specified number of error digits (with a default of 2 seen above), but values of 1 or 2 are typical.
 The error digits are provided in parentheses.
