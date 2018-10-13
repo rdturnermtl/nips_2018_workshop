@@ -60,6 +60,7 @@
 \DeclareMathOperator*{\argmax}{argmax}
 
 \newcommand{\code}{\texttt}
+\newcommand{\sectionx}{\paragraph}
 
 % TODO
 % package name
@@ -94,8 +95,7 @@ The classic example for regression is for MSE one should report the mean of the 
 This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
 The classification benchmark can build loss functions with arbitrary loss matrices; this allows, for example, probabilistic predictions to be converted to a ``don't know'' option and evaluated.
 
-\section{The interface}
-
+\sectionx{The interface}
 Benchmark Tools was largely motivated by noticing that applied ML projects contain many repeated ``boilerplate'' code segments that frequently repeat across projects.
 These typically consist of: splitting data, training models, testing models, evaluating with statistical analysis, and finally proper formatting of tables.
 
@@ -176,8 +176,7 @@ The package even automatically adjusts the exponent of each column to minimize i
 The package also comes with a \emph{data splitter} module that supports random, ordinal, or temporal splitting across features in pandas dataframes.
 It also allows for jointly splitting across multiple features to test difficult generalization cases (e.g., test set of random unseen users \emph{and} later in time than training)\@.
 
-\section{Loss functions}
-
+\sectionx{Loss functions}
 Benchmark Tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
 From a decision theoretic perspective, loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
 The loss for model $A$ on iid test data with labels $y_{1:N}$ works as
@@ -193,8 +192,7 @@ Curve summaries create a performance curve and then summarize with a single numb
 We support ROC, precision-recall, and precision-recall-gain~\citep{Flach2015} curves.
 Great care is taken to ensure these curves and summaries are unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
 
-\section{Error bars}
-
+\sectionx{Error bars}
 Putting error bars on the loss functions is essentially placing an error bar on the mean of $\loss$.
 Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
 Given the individual losses $\loss_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bound.
@@ -217,8 +215,7 @@ We built a vectorized bootstrap that reweights the data points via a multinomial
 This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
 For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets.
 
-\section{Conclusions}
-
+\sectionx{Conclusions}
 We have presented a package with utility to be used in many ML challenges and publications.
 The use of one-liner performance tables with error bars and significance levels should make its use universal in ML\@.
 The package still has much potential for expansion beyond classification and regression to more complex tasks such as structured prediction problems.
