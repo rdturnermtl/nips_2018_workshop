@@ -139,10 +139,10 @@ import benchmark_tools.sciprint as sp
 print sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True)
 \end{verbatim}
-Both plain text and \LaTeX tables are available via the \code{use\_tex} argument.
-The above snippet produces the \LaTeX table:\\
+Both plain text and \LaTeX\ tables are available via the \code{use\_tex} argument.
+The above snippet produces the \LaTeX\ table:\\
 {\tiny
-\begin{tabular}{|l|Sr|Sr|Sr|Sr|Sr|Sr|Sr|}
+\begin{tabular}{|l|l|r|l|r|l|r|l|r|l|r|l|r|l|r|}
 \toprule
 {}                &       {AP} &      {p} &      {AUC} &      {p} &  {AUPRG} &      {p} &    {Brier} &      {p} & {NLL (nats)} &      {p} &   {sphere} &      {p} & {zero one} &      {p} \\
 \midrule
