@@ -84,7 +84,7 @@ Once these gains become small, they are often explainable purely by sampling noi
 
 To enable widespread error analysis with minimal time overhead we present the \emph{Benchmark Tools} Python package.\footnote{This package is found at
 \url{https://github.com/rdturnermtl/benchmark_tools}.}
-Benchmark Tools is usable in a simple one-liner fashion using a dictionary of sklearn compatible objects~\citep{Pedregosa2011}, along with a train and test data set.
+Benchmark Tools is usable as a simple one-liner using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and train/test data sets.
 The routine will train, test, and evaluate the models on multiple loss functions.
 Individual pieces of this process are usable in a modular way.
 
@@ -101,7 +101,7 @@ These typically consist of: splitting data, training models, testing models, eva
 
 The high level interface of the package has just two phases: \code{just\_benchmark} and \code{just\_format\_it}.
 These work as follows:
-\vspace{-3mm}
+\vspace{-2mm}
 \begin{verbatim}
 import benchmark_tools.classification as btc
 from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
@@ -109,21 +109,20 @@ performance_df, performance_curves_dict = \
     btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
                        STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method='iid')
 \end{verbatim}
-\vspace{-3mm}
+\vspace{-2mm}
 This benchmarks all the models in the classifiers dictionary \code{classifiers} on the data \code{(X\_train, y\_train, X\_test, y\_test)} for 2-class classification.
 It uses the loss function described in the dictionaries \code{STD\_CLASS\_LOSS}, and the curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}.
 \code{ref\_method} defines the model that is the reference to compare against (using a paired statistical test giving tighter error bars) for assessing statistically significant performance gains.
 We provide an iid dummy model (\code{JustNoise}) that provides constant predictions to serve as a simple baseline.
 The \code{classifiers} dictionary is as simple as:
-\vspace{-3mm}
+\vspace{-2mm}
 \begin{verbatim}
 classifiers = {'iid': btc.JustNoise(),
                'Nearest Neighbors': KNeighborsClassifier(3),
                'Linear SVM': SVC(kernel='linear', C=0.025, probability=True),
-               'RBF SVM': SVC(gamma=2, C=1, probability=True),
-               ...
+               'RBF SVM': SVC(gamma=2, C=1, probability=True)}
 \end{verbatim}
-\vspace{-3mm}
+\vspace{-2mm}
 The objects need not be sklearn objects but merely support the methods \code{fit} and \code{predict\_log\_proba} as per the sklearn interface.
 Equivalent routines are available in \code{benchmark\_tools.regression} for regression problems.
 
@@ -132,17 +131,17 @@ This allows for building a dataframe of: predictive distributions on each test p
 
 \paragraph{Sciprint}
 The \code{performance\_df} is a pandas dataframe with a table summarizing the performance.
-However, for publishable results one must first format it correctly:
+However for publishable results, one must first format it correctly.
 The \emph{sciprint} module formats these tables for scientific presentation~\citep{Cole2015}.
 The performance dataframe is converted to cleanly formatted tables: correct significant figures, shifting of exponent for compactness, and correct alignment of decimal points, units in headers, etc.
 Here we use:
-\vspace{-3mm}
+\vspace{-2mm}
 \begin{verbatim}
 import benchmark_tools.sciprint as sp
 print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True))
 \end{verbatim}
-\vspace{-3mm}
+\vspace{-2mm}
 Both plain text and \LaTeX\ tables are available via the \code{use\_tex} argument.
 The above snippet produces the \LaTeX\ table:
 \begin{center}
@@ -174,7 +173,8 @@ The p-values are limited to specified number of digits.
 The package even automatically adjusts the exponent of each column to minimize its width for written compactness.
 %For this reason, metrics are best used as columns with models as rows, because the scale/units are fixed across metrics.
 
-The package also comes with a \emph{data splitter} module that supports random, ordinal, or temporal splitting across features in pandas dataframes.
+\paragraph{Data splitter}
+The package comes with a \emph{data splitter} module that supports random, ordinal, or temporal splitting across features in pandas dataframes.
 It also allows for jointly splitting across multiple features to test difficult generalization cases (e.g., test set of random unseen users \emph{and} later in time than training)\@.
 
 \sectionx{Loss functions}
@@ -206,13 +206,15 @@ For very conservative error bars, we offer the Bernstein bound, which is distrib
 %The p-value column always uses a paired test to the reference model $R$ to construct the p-values.
 % Would be good to put in CI eqns but just no space
 
+\paragraph{Significance tests}
 The p-values are designed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bound.
 The confidence interval $(U,L)$ on $\Delta \Loss := \Loss_A - \Loss_R$ and p-value $p$ (on $H_0$:~$\Loss_A = \Loss_R$) are designed to be coherent in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
 Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
 % Would be good to use p-val eqns but just no space
 
-\paragraph{Significance tests}
-The error bars and significance tests for the curve summaries are produced via bootstrap~\citep{Efron1994}.
+\paragraph{Error bars on curves}
+The error bars and significance tests for the curves are produced via bootstrap~\citep{Efron1994}.
+We place confidence intervals on both the raw curves (for plotting) and their AUC summaries (for tables)\@.
 We built a vectorized bootstrap that reweights the data points via a multinomial distribution.
 This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
 For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets.
@@ -223,7 +225,7 @@ The use of one-liner performance tables with error bars and significance levels 
 The package still has much potential for expansion beyond classification and regression to more complex tasks such as structured prediction problems.
 
 \paragraph{Acknowledgments}
-We thank Riashat Islam for setting up continuous integration testing in the Benchmark Tools package.
+We thank Riashat Islam for setting up continuous integration testing in the Benchmark Tools package, and Jane Hung for proof reading.
 
 \bibliographystyle{abbrvnat}
 \bibliography{btpaper} % References file
