@@ -100,7 +100,7 @@ These based upon splitting the data, training the models, testing the models, an
 Also, proper formatting of tables for presentation of the results is also a common repetitive task.
 
 The high level interface of the package has just two phases: \code{just\_benchmark} and \code{just\_format\_it}.
-These work as follows:	
+These work as follows:
 \begin{verbatim}
 import benchmark_tools.classification as btc
 from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
@@ -213,7 +213,7 @@ Construction of p-values from the t-test and bootstrap are standard, but Bernste
 The error bars and significance tests for the curve summaries are produced via bootstrap~\citep{Efron1994}.
 We a vectorized bootstrap that reweights the data point via a multinomial distribution.
 This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
-For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets. 
+For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets.
 
 \section{Conclusions}
 
