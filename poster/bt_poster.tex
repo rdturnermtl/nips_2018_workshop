@@ -199,47 +199,38 @@ Data splitter:
 
 Loss functions:
 \begin{itemize}
-\item Benchmark Tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
+  \item Two metric types: \emph{loss functions} and \emph{curve summaries}
+  \item Loss functions decision theoretically motivated, easier for confidence intervals
+  \begin{align}
+    \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]
+  \end{align}
+  \item Built-in \emph{proper scoring rules}: log loss (NLL), Brier loss, spherical loss
+  \item General loss matrcies for hard losses
+  \item New metrics to be easily added
+  \item Non-probabilistic methods usable by ``pipelining'' a \emph{calibrator}
+  \item Curve summaries (ROC, PR, PRG) for a single number
 \end{itemize}
-From a decision theoretic perspective, loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
-The loss for model $A$ on iid test data with labels $y_{1:N}$ works as
-\begin{align}
-  \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]\,,
-\end{align}
-where $a_i$ is the Bayes' optimal action for the loss function $\loss$.
-Benchmark Tools has built-in support for general \emph{loss matrices} for hard classification but also supports the log loss (NLL), Brier loss, and spherical loss as \emph{proper scoring rules} to evaluate a model's soft predictions.
-The modular system is extendable, allowing for new metrics to be easily added.
-Non-probabilistic methods are usable by ``pipelining'' with a \emph{calibrator}, some of which are in sklearn.
 
-Curve summaries create a performance curve and then summarize with a single number.
-We support ROC, precision-recall, and precision-recall-gain curves.
-Great care is taken to ensure these curves and summaries are unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
+Error bars:
+\begin{itemize}
+  \item Place confidence interval (CI) on mean loss with $N \rightarrow \infty$ test set from the same distribution
+  \item Three methods for CI: t-test, bootstrap, and Bernstein bound (in order of assumptions)
+\end{itemize}
 
-\sectionx{Error bars}
-Putting error bars on the loss functions is essentially placing an error bar on the mean of $\loss$.
-Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
-Given the individual losses $\loss_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bound.
-The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
-The percentile bootstrap still makes some asymptotic assumptions but weaker than the t-test.
-For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample, but requires a \emph{bounded loss}; otherwise, it results in infinite error bars.
+Significance tests:
+\begin{itemize}
+  \item p-values designed to match the error bars (can be via the 3 methods)
+  \item Three methods for CI: t-test, bootstrap, and Bernstein bound (in order of assumptions)
+  \item Test hypothesis $H_0$:~$\Loss_A = \Loss_R$
+\end{itemize}
 
-%For tighter error bars we support the option \code{pairwise\_CI}, which builds the error bars from $\loss_A - \loss_R$ to compare model $A$ to the reference model $R$.
-%Since, the errors in two models are often correlated, the pairwise error bars will be tighter.
-%The p-value column always uses a paired test to the reference model $R$ to construct the p-values.
-% Would be good to put in CI eqns but just no space
-
-\paragraph{Significance tests}
-The p-values are designed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bound.
-The confidence interval $(U,L)$ on $\Delta \Loss := \Loss_A - \Loss_R$ and p-value $p$ (on $H_0$:~$\Loss_A = \Loss_R$) are designed to be coherent in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
-Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
-% Would be good to use p-val eqns but just no space
-
-\paragraph{Error bars on curves}
-The error bars and significance tests for the curves are produced via bootstrap.
-We place confidence intervals on both the raw curves (for plotting) and their AUC summaries (for tables)\@.
-We built a vectorized bootstrap that reweights the data points via a multinomial distribution.
-This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
-For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets.
+Error bars on curves:
+\begin{itemize}
+  \item CI and p-values for curves via bootstrap
+  \item CI on raw curves (for plotting) and AUC (for tables)
+  \item Vectorized bootstrap: reweight data points via multinomial distribution
+  \item Avoids re-creating the data sets in memory (very slow)
+\end{itemize}
 
 \end{multicols}
 \end{document}
