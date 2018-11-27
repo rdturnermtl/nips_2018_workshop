@@ -79,7 +79,7 @@
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
 \begin{centering}{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{The Machine Learning Benchmark Tools Package} \color{Black}}\\ % Title
-\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\ % TODO try and move this to the right?
+%\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\ % TODO try and move this to the right?
 \Huge \textbf{Ryan Turner}\\ % Author(s)
 \end{centering}
 
@@ -115,8 +115,9 @@
 \end{itemize}
 
 \paragraph{Code}
-\centering
 \large {\url{github.com/rdturnermtl/benchmark_tools}}
+
+\columnbreak
 
 \mysection{The interface}
 %
@@ -134,7 +135,7 @@ Modular pieces:
   \item ``do-it-all'' \code{just\_benchmark} routine has 3 phases
   \item \code{get\_pred\_log\_prob}: predictive distributions on each test point and model
   \item \code{loss\_table}: the losses for each prediction
-  \item \code{loss\_summary\_table}: mean loss for each method along with error bars and p-values
+  \item \code{loss\_summary\_table}: mean loss for each method $+$ error bars and p-values
 \end{itemize}
 
 Sciprint:
@@ -152,7 +153,7 @@ Data splitter:
 Loss functions:
 \begin{itemize}
   \item Two metric types: \emph{loss functions} and \emph{curve summaries}
-  \item Loss functions decision theoretically motivated, easier for confidence intervals
+  \item Loss functions decision theoretically motivated, easier for confidence intervals (CI)
   \begin{align}
     \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]
   \end{align}
@@ -165,14 +166,13 @@ Loss functions:
 
 Error bars:
 \begin{itemize}
-  \item Place confidence interval (CI) on mean loss with $N \rightarrow \infty$ test set from the same distribution
-  \item Three methods for CI: t-test, bootstrap, and Bernstein bound (in order of assumptions)
+  \item Place CI on mean loss with $N \rightarrow \infty$ test set from the same distn.
+  \item Three methods for CI: t-test, bootstrap, and Bernstein bound
 \end{itemize}
 
 Significance tests:
 \begin{itemize}
   \item p-values designed to match the error bars (can be via the 3 methods)
-  \item Three methods for CI: t-test, bootstrap, and Bernstein bound (in order of assumptions)
   \item Test hypothesis $H_0$:~$\Loss_A = \Loss_R$
 \end{itemize}
 
