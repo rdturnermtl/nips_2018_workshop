@@ -124,10 +124,7 @@
 \begin{itemize}
   \item Classication uses \code{benchmark\_tools.classification}
   \item Regression uses \code{benchmark\_tools.regression}
-  % \item Loss functions in \code{STD\_CLASS\_LOSS}, curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}
   \item Bayes' decision rule converts predictive distribution to \emph{action} for each loss function
-  % \item \code{ref\_method} reference for paired statistical tests
-  %\item Constant prediction dummy model in \code{JustNoise}
   \item Objects just support methods \code{fit} and \code{predict\_log\_proba} (sklearn interface)
 \end{itemize}
 %
@@ -182,13 +179,19 @@
 
 \end{multicols}
 
+\vspace{1cm} % A bit of extra whitespace between the header and poster content
+
 \begin{multicols}{2}
+
+\mysection{Examples}
+
 \begin{itemize}
   \item Motivation: reduce common ``boilerplate'' code across ML projects
   \item Pipeline: split data, training models, testing models, evaluating/statistical analysis, and formatting of tables
   \item Just two phases: \code{just\_benchmark} and \code{just\_format\_it}
 \end{itemize}
-%
+
+\sectionx{Classification}
 \begin{verbatim}
 import benchmark_tools.classification as btc
 from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
@@ -203,6 +206,11 @@ classifiers = {'iid': btc.JustNoise(),
                'Linear SVM': SVC(kernel='linear', C=0.025, probability=True),
                'RBF SVM': SVC(gamma=2, C=1, probability=True)}
 \end{verbatim}
+\begin{itemize}
+  \item Loss functions in \code{STD\_CLASS\_LOSS}, curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}
+  \item \code{ref\_method} reference for paired statistical tests
+  \item Constant prediction dummy model in \code{JustNoise}
+\end{itemize}
 \begin{verbatim}
 import benchmark_tools.sciprint as sp
 print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
@@ -210,27 +218,35 @@ print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
 \end{verbatim}
 %
 \begin{center}
-{\tiny
+{\footnotesize
 \setlength{\tabcolsep}{0.75em} % for the horizontal padding
 \begin{tabular}{|l|l|r|l|r|l|r|l|r|l|r|l|r|l|r|}
 \toprule
 {}                &       {AP} &      {p} &      {AUC} &      {p} &  {AUPRG} &      {p} &    {Brier} &      {p} & {NLL (nats)} &      {p} &   {sphere} &      {p} & {zero one} &      {p} \\
 \midrule
-%AdaBoost          &  0.93(16)  &  <0.0001 &  0.950(96) &  <0.0001 &  0.90464 &  <0.0001 &  0.42(14)  &  <0.0001 &    0.368(80) &  <0.0001 &  0.36(15)  &  <0.0001 &  0.075(86) &  <0.0001 \\
-%Decision Tree     &  0.95(13)  &  <0.0001 &  0.966(70) &  <0.0001 &  0.93860 &  <0.0001 &  0.18(25)  &  <0.0001 &    0.40(71)  &   0.4072 &  0.16(22)  &  <0.0001 &  0.050(71) &  <0.0001 \\
-%Gaussian Process  &  0.90(22)  &  <0.0001 &  0.95(12)  &  <0.0001 &  0.92081 &  <0.0001 &  0.27(17)  &  <0.0001 &    0.27(11)  &  <0.0001 &  0.22(16)  &  <0.0001 &  0.025(51) &  <0.0001 \\
-Linear SVM        &  0.952(99) &  <0.0001 &  0.950(77) &  <0.0001 &  0.88705 &  <0.0001 &  0.34(24)  &  <0.0001 &    0.29(16)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.15(12)  &   0.0006 \\
-%Naive Bayes       &  0.957(97) &  <0.0001 &  0.957(68) &  <0.0001 &  0.89782 &  <0.0001 &  0.34(25)  &  <0.0001 &    0.28(18)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.13(11)  &   0.0002 \\
-Nearest Neighbors &  0.94(14)  &  <0.0001 &  0.969(69) &  <0.0001 &  0.93498 &  <0.0001 &  0.18(21)  &  <0.0001 &    0.42(70)  &   0.4241 &  0.15(18)  &  <0.0001 &  0.025(51) &  <0.0001 \\
-%Neural Net        &  0.957(91) &  <0.0001 &  0.957(69) &  <0.0001 &  0.89782 &  <0.0001 &  0.33(23)  &  <0.0001 &    0.28(15)  &  <0.0001 &  0.30(22)  &  <0.0001 &  0.100(98) &  <0.0001 \\
-%QDA               &  0.951(91) &  <0.0001 &  0.950(80) &  <0.0001 &  0.88517 &  <0.0001 &  0.34(27)  &  <0.0001 &    0.29(21)  &   0.0003 &  0.31(25)  &  <0.0001 &  0.15(12)  &   0.0006 \\
-RBF SVM           &  0.93(18)  &  <0.0001 &  0.957(94) &  <0.0001 &  0.92081 &  <0.0001 &  0.14(20)  &  <0.0001 &    0.18(18)  &  <0.0001 &  0.12(17)  &  <0.0001 &  0.025(51) &  <0.0001 \\
-%Random Forest     &  0.965(82) &  <0.0001 &  0.949(84) &  <0.0001 &  0.92147 &  <0.0001 &  0.31(26)  &  <0.0001 &    0.52(70)  &   0.6099 &  0.28(24)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+%AdaBoost          &  0.93(16)  &  $<$0.0001 &  0.950(96) &  $<$0.0001 &  0.90464 &  $<$0.0001 &  0.42(14)  &  $<$0.0001 &    0.368(80) &  $<$0.0001 &  0.36(15)  &  $<$0.0001 &  0.075(86) &  $<$0.0001 \\
+%Decision Tree     &  0.95(13)  &  $<$0.0001 &  0.966(70) &  $<$0.0001 &  0.93860 &  $<$0.0001 &  0.18(25)  &  $<$0.0001 &    0.40(71)  &   0.4072 &  0.16(22)  &  $<$0.0001 &  0.050(71) &  $<$0.0001 \\
+%Gaussian Process  &  0.90(22)  &  $<$0.0001 &  0.95(12)  &  $<$0.0001 &  0.92081 &  $<$0.0001 &  0.27(17)  &  $<$0.0001 &    0.27(11)  &  $<$0.0001 &  0.22(16)  &  $<$0.0001 &  0.025(51) &  $<$0.0001 \\
+Linear SVM        &  0.952(99) &  $<$0.0001 &  0.950(77) &  $<$0.0001 &  0.88705 &  $<$0.0001 &  0.34(24)  &  $<$0.0001 &    0.29(16)  &  $<$0.0001 &  0.31(24)  &  $<$0.0001 &  0.15(12)  &   0.0006 \\
+%Naive Bayes       &  0.957(97) &  $<$0.0001 &  0.957(68) &  $<$0.0001 &  0.89782 &  $<$0.0001 &  0.34(25)  &  $<$0.0001 &    0.28(18)  &  $<$0.0001 &  0.31(24)  &  $<$0.0001 &  0.13(11)  &   0.0002 \\
+Nearest Neighbors &  0.94(14)  &  $<$0.0001 &  0.969(69) &  $<$0.0001 &  0.93498 &  $<$0.0001 &  0.18(21)  &  $<$0.0001 &    0.42(70)  &   0.4241 &  0.15(18)  &  $<$0.0001 &  0.025(51) &  $<$0.0001 \\
+%Neural Net        &  0.957(91) &  $<$0.0001 &  0.957(69) &  $<$0.0001 &  0.89782 &  $<$0.0001 &  0.33(23)  &  $<$0.0001 &    0.28(15)  &  $<$0.0001 &  0.30(22)  &  $<$0.0001 &  0.100(98) &  $<$0.0001 \\
+%QDA               &  0.951(91) &  $<$0.0001 &  0.950(80) &  $<$0.0001 &  0.88517 &  $<$0.0001 &  0.34(27)  &  $<$0.0001 &    0.29(21)  &   0.0003 &  0.31(25)  &  $<$0.0001 &  0.15(12)  &   0.0006 \\
+RBF SVM           &  0.93(18)  &  $<$0.0001 &  0.957(94) &  $<$0.0001 &  0.92081 &  $<$0.0001 &  0.14(20)  &  $<$0.0001 &    0.18(18)  &  $<$0.0001 &  0.12(17)  &  $<$0.0001 &  0.025(51) &  $<$0.0001 \\
+%Random Forest     &  0.965(82) &  $<$0.0001 &  0.949(84) &  $<$0.0001 &  0.92147 &  $<$0.0001 &  0.31(26)  &  $<$0.0001 &    0.52(70)  &   0.6099 &  0.28(24)  &  $<$0.0001 &  0.100(98) &  $<$0.0001 \\
 iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &     {--} &  1.004(22) &     {--} &    0.695(11) &     {--} &  1.005(27) &     {--} &  0.53(17)  &     {--} \\
 \bottomrule
 \end{tabular}
 }
 \end{center}
+
+\sectionx{Performance curves}
+
+\includegraphics[width=0.45\textwidth]{AUC.png}\\
+\includegraphics[width=0.45\textwidth]{AP.png}
+
+\sectionx{Regression}
+
 \begin{verbatim}
 import benchmark_tools_regr as btr
 full_tbl = btr.just_benchmark(X_train, y_train, X_test, y_test,
@@ -249,8 +265,6 @@ iid &  0.96908     &    {--} &  1.3982      &     {--} &  1.5884      &     {--}
 \bottomrule
 \end{tabular}
 
-\includegraphics[width=0.45\textwidth]{AUC.png}\\
-\includegraphics[width=0.45\textwidth]{AP.png}
 \end{multicols}
 
 \end{document}
