@@ -1,0 +1,246 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% a0poster Landscape Poster
+% LaTeX Template
+% Version 1.0 (22/06/13)
+%
+% The a0poster class was created by:
+% Gerlinde Kettl and Matthias Weiser (tex@kettl.de)
+% 
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[a0,landscape]{a0poster}
+
+\usepackage{multicol} % This is so we can have multiple columns of text side-by-side
+\columnsep=100pt % This is the amount of white space between the columns in the poster
+\columnseprule=7pt % This is the thickness of the black line between the columns in the poster
+
+\usepackage[svgnames]{xcolor} % Specify colors by their 'svgnames', for a full list of all colors available see here: http://www.latextemplates.com/svgnames-colors
+
+\usepackage{times} % Use the times font
+%\usepackage{palatino} % Uncomment to use the Palatino font
+
+\usepackage{graphicx} % Required for including images
+\graphicspath{{figures/}} % Location of the graphics files
+\usepackage{booktabs} % Top and bottom rules for table
+\usepackage[font=large,labelfont=bf]{caption} % Required for specifying captions to tables and figures
+\usepackage{amsfonts, amsmath, amsthm, amssymb} % For math fonts, symbols and environments
+\usepackage{wrapfig} % Allows wrapping text around tables and figures
+\usepackage{comment}
+\usepackage{bm}
+\usepackage{anyfontsize}
+\usepackage{multirow}
+
+\usepackage{sidecap}
+
+\newcommand{\mysection}[1]{\section*{\fontsize{67.1}{82} \selectfont \color{NavyBlue} #1 \color{Black}}}
+
+\usepackage{subfigure}
+
+\usepackage{parskip}
+
+\usepackage{url}
+
+\usepackage{float} 
+
+\renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
+\newcommand{\mat}[1]{{\ensuremath{\mathbf{#1}}}} % matrix
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\loss}{\ell}
+\newcommand{\sample}{\sim}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\newcommand{\code}{\texttt}
+\newcommand{\sectionx}{\paragraph}
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	POSTER HEADER 
+%----------------------------------------------------------------------------------------
+
+% The header is divided into three boxes:
+% The first is 55% wide and houses the title, subtitle, names and university/organization
+% The second is 25% wide and houses contact information
+% The third is 19% wide and houses a logo for your university/organization or a photo of you
+% The widths of these boxes can be easily edited to accommodate your content as you see fit
+
+\begin{centering}{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{The Machine Learning Benchmark Tools Package} \color{Black}}\\ % Title
+\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\ % TODO try and move this to the right?
+\Huge \textbf{Ryan Turner}\\ % Author(s)
+\end{centering}
+
+\vspace{1cm} % A bit of extra whitespace between the header and poster content
+
+%----------------------------------------------------------------------------------------
+
+\begin{multicols}{3} % This is how many columns your poster will be broken into, a poster with many figures may benefit from less columns whereas a text-heavy poster benefits from more
+
+%----------------------------------------------------------------------------------------
+%	INTRODUCTION
+%----------------------------------------------------------------------------------------
+
+\Large
+
+\mysection{Introduction}
+
+\begin{itemize}
+  \item Easy benchmarking of machine learning models with sklearn interface with statistical tests built-in
+  \item Error bars and significance levels are rarer in ML than science in general
+  \item One liner on sklearn compatible objects: train, test, and evaluate the models on multiple loss functions
+  \item Process are usable in a modular way
+\end{itemize}
+
+\begin{itemize}
+  \item Multiple loss functions is a key design principle
+  \item Bayes' decision rule converts predictive distribution to \emph{action} for each loss function
+  \item \textbf{Example}: MSE $\implies$ mean, MAE $\implies$ median
+  \item Automatic conversion to ensure model fairly compared across metrics
+\end{itemize}
+
+\paragraph{Code}
+\centering
+\large {\url{github.com/rdturnermtl/benchmark_tools}}
+
+\mysection{The interface}
+
+\begin{itemize}
+  \item Motivation: reduce common ``boilerplate'' code across ML projects
+  \item Pipeline: split data, training models, testing models, evaluating/statistical analysis, and formatting of tables
+  \item Just two phases: \code{just\_benchmark} and \code{just\_format\_it}
+\end{itemize}
+%
+\begin{verbatim}
+import benchmark_tools.classification as btc
+from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
+performance_df, performance_curves_dict = \
+    btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
+                       STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method='iid')
+\end{verbatim}
+The \code{classifiers} dictionary is as simple as:
+\vspace{-2mm}
+\begin{verbatim}
+classifiers = {'iid': btc.JustNoise(),
+               'Nearest Neighbors': KNeighborsClassifier(3),
+               'Linear SVM': SVC(kernel='linear', C=0.025, probability=True),
+               'RBF SVM': SVC(gamma=2, C=1, probability=True)}
+\end{verbatim}
+%
+\begin{itemize}
+  \item Loss functions in \code{STD\_CLASS\_LOSS}, curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}
+  \item Bayes' decision rule converts predictive distribution to \emph{action} for each loss function
+  \item \code{ref\_method} reference for paired statistical tests
+  \item Constant prediction dummy model in \code{JustNoise}
+  \item Objects just support methods \code{fit} and \code{predict\_log\_proba} (sklearn interface)
+  \item regression problems in \code{benchmark\_tools.regression}
+\end{itemize}
+
+Modular pieces:
+\begin{itemize}
+  \item ``do-it-all'' \code{just\_benchmark} routine has 3 phases
+  \item \code{get\_pred\_log\_prob}: predictive distributions on each test point and model
+  \item \code{loss\_table}: the losses for each prediction
+  \item \code{loss\_summary\_table}: mean loss for each method along with error bars and p-values
+\end{itemize}
+
+Sciprint:
+\begin{itemize}
+  \item Publishable results: one must first format \code{performance\_df}
+  \item Cleanly format: correct significant figures, shifting of exponent for compactness, and correct alignment of decimal points, units in headers
+\end{itemize}
+%
+\begin{verbatim}
+import benchmark_tools.sciprint as sp
+print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
+                        non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True))
+\end{verbatim}
+%
+\begin{center}
+{\tiny
+\setlength{\tabcolsep}{0.75em} % for the horizontal padding
+\begin{tabular}{|l|l|r|l|r|l|r|l|r|l|r|l|r|l|r|}
+\toprule
+{}                &       {AP} &      {p} &      {AUC} &      {p} &  {AUPRG} &      {p} &    {Brier} &      {p} & {NLL (nats)} &      {p} &   {sphere} &      {p} & {zero one} &      {p} \\
+\midrule
+%AdaBoost          &  0.93(16)  &  <0.0001 &  0.950(96) &  <0.0001 &  0.90464 &  <0.0001 &  0.42(14)  &  <0.0001 &    0.368(80) &  <0.0001 &  0.36(15)  &  <0.0001 &  0.075(86) &  <0.0001 \\
+%Decision Tree     &  0.95(13)  &  <0.0001 &  0.966(70) &  <0.0001 &  0.93860 &  <0.0001 &  0.18(25)  &  <0.0001 &    0.40(71)  &   0.4072 &  0.16(22)  &  <0.0001 &  0.050(71) &  <0.0001 \\
+%Gaussian Process  &  0.90(22)  &  <0.0001 &  0.95(12)  &  <0.0001 &  0.92081 &  <0.0001 &  0.27(17)  &  <0.0001 &    0.27(11)  &  <0.0001 &  0.22(16)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+Linear SVM        &  0.952(99) &  <0.0001 &  0.950(77) &  <0.0001 &  0.88705 &  <0.0001 &  0.34(24)  &  <0.0001 &    0.29(16)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.15(12)  &   0.0006 \\
+%Naive Bayes       &  0.957(97) &  <0.0001 &  0.957(68) &  <0.0001 &  0.89782 &  <0.0001 &  0.34(25)  &  <0.0001 &    0.28(18)  &  <0.0001 &  0.31(24)  &  <0.0001 &  0.13(11)  &   0.0002 \\
+Nearest Neighbors &  0.94(14)  &  <0.0001 &  0.969(69) &  <0.0001 &  0.93498 &  <0.0001 &  0.18(21)  &  <0.0001 &    0.42(70)  &   0.4241 &  0.15(18)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+%Neural Net        &  0.957(91) &  <0.0001 &  0.957(69) &  <0.0001 &  0.89782 &  <0.0001 &  0.33(23)  &  <0.0001 &    0.28(15)  &  <0.0001 &  0.30(22)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+%QDA               &  0.951(91) &  <0.0001 &  0.950(80) &  <0.0001 &  0.88517 &  <0.0001 &  0.34(27)  &  <0.0001 &    0.29(21)  &   0.0003 &  0.31(25)  &  <0.0001 &  0.15(12)  &   0.0006 \\
+RBF SVM           &  0.93(18)  &  <0.0001 &  0.957(94) &  <0.0001 &  0.92081 &  <0.0001 &  0.14(20)  &  <0.0001 &    0.18(18)  &  <0.0001 &  0.12(17)  &  <0.0001 &  0.025(51) &  <0.0001 \\
+%Random Forest     &  0.965(82) &  <0.0001 &  0.949(84) &  <0.0001 &  0.92147 &  <0.0001 &  0.31(26)  &  <0.0001 &    0.52(70)  &   0.6099 &  0.28(24)  &  <0.0001 &  0.100(98) &  <0.0001 \\
+iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &     {--} &  1.004(22) &     {--} &    0.695(11) &     {--} &  1.005(27) &     {--} &  0.53(17)  &     {--} \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+
+Data splitter:
+\begin{itemize}
+  \item Supports random, ordinal, or temporal splitting across features in pandas dataframes
+  \item Jointly splitting across multiple features to test difficult generalization cases
+\end{itemize}
+
+Loss functions:
+\begin{itemize}
+\item Benchmark Tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
+\end{itemize}
+From a decision theoretic perspective, loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
+The loss for model $A$ on iid test data with labels $y_{1:N}$ works as
+\begin{align}
+  \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]\,,
+\end{align}
+where $a_i$ is the Bayes' optimal action for the loss function $\loss$.
+Benchmark Tools has built-in support for general \emph{loss matrices} for hard classification but also supports the log loss (NLL), Brier loss, and spherical loss as \emph{proper scoring rules} to evaluate a model's soft predictions.
+The modular system is extendable, allowing for new metrics to be easily added.
+Non-probabilistic methods are usable by ``pipelining'' with a \emph{calibrator}, some of which are in sklearn.
+
+Curve summaries create a performance curve and then summarize with a single number.
+We support ROC, precision-recall, and precision-recall-gain curves.
+Great care is taken to ensure these curves and summaries are unbiased and behave correctly for a random classifier, something that was \emph{not} done in sklearn (e.g., see issue \#4577)\@.
+
+\sectionx{Error bars}
+Putting error bars on the loss functions is essentially placing an error bar on the mean of $\loss$.
+Note this places a confidence interval on what the performance would be on a new ($N \rightarrow \infty$) test set from the same distribution, and with the same trained model.
+Given the individual losses $\loss_{1:N}$, we support three methods for confidence intervals: t-test, bootstrap, and Bernstein bound.
+The t-test is fairly standard, but makes a central limit assumption that the error distribution on the mean is normally distributed.
+The percentile bootstrap still makes some asymptotic assumptions but weaker than the t-test.
+For very conservative error bars, we offer the Bernstein bound, which is distribution free and holds for finite sample, but requires a \emph{bounded loss}; otherwise, it results in infinite error bars.
+
+%For tighter error bars we support the option \code{pairwise\_CI}, which builds the error bars from $\loss_A - \loss_R$ to compare model $A$ to the reference model $R$.
+%Since, the errors in two models are often correlated, the pairwise error bars will be tighter.
+%The p-value column always uses a paired test to the reference model $R$ to construct the p-values.
+% Would be good to put in CI eqns but just no space
+
+\paragraph{Significance tests}
+The p-values are designed to match the error bars, and therefore constructed using either t-test, bootstrap, or Bernstein bound.
+The confidence interval $(U,L)$ on $\Delta \Loss := \Loss_A - \Loss_R$ and p-value $p$ (on $H_0$:~$\Loss_A = \Loss_R$) are designed to be coherent in the sense that: $L = 0$ or $U = 0$ if the confidence interval is computed with coverage $\alpha=1-p$.
+Construction of p-values from the t-test and bootstrap are standard, but Bernstein is more novel.
+% Would be good to use p-val eqns but just no space
+
+\paragraph{Error bars on curves}
+The error bars and significance tests for the curves are produced via bootstrap.
+We place confidence intervals on both the raw curves (for plotting) and their AUC summaries (for tables)\@.
+We built a vectorized bootstrap that reweights the data points via a multinomial distribution.
+This avoids re-creating the data sets in memory upon resampling, which is very slow for large data sets.
+For example, the MATLAB bootstrap routine (\code{bootstrp}) takes this approach, and is often slower than training the classifier itself for large data sets.
+
+\end{multicols}
+\end{document}
+
