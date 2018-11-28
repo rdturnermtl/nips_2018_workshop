@@ -183,6 +183,8 @@
 
 \begin{multicols}{2}
 
+\Large
+
 \mysection{Examples}
 
 \begin{itemize}
@@ -192,6 +194,7 @@
 \end{itemize}
 
 \sectionx{Classification}
+{\normalsize
 \begin{verbatim}
 import benchmark_tools.classification as btc
 from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
@@ -199,24 +202,28 @@ performance_df, performance_curves_dict = \
     btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
                        STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method='iid')
 \end{verbatim}
+}
 The \code{classifiers} dictionary is as simple as:
+{\normalsize
 \begin{verbatim}
 classifiers = {'iid': btc.JustNoise(),
                'Nearest Neighbors': KNeighborsClassifier(3),
                'Linear SVM': SVC(kernel='linear', C=0.025, probability=True),
                'RBF SVM': SVC(gamma=2, C=1, probability=True)}
 \end{verbatim}
+}
 \begin{itemize}
   \item Loss functions in \code{STD\_CLASS\_LOSS}, curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}
   \item \code{ref\_method} reference for paired statistical tests
   \item Constant prediction dummy model in \code{JustNoise}
 \end{itemize}
+{\normalsize
 \begin{verbatim}
 import benchmark_tools.sciprint as sp
 print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True))
 \end{verbatim}
-%
+}
 \begin{center}
 {\footnotesize
 \setlength{\tabcolsep}{0.75em} % for the horizontal padding
@@ -240,6 +247,8 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 }
 \end{center}
 
+\columnbreak
+
 \sectionx{Performance curves}
 
 \includegraphics[width=0.45\textwidth]{AUC.png}\\
@@ -247,15 +256,18 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 
 \sectionx{Regression}
 
+{\normalsize
 \begin{verbatim}
-import benchmark_tools_regr as btr
+import benchmark_tools.regression as btr
 full_tbl = btr.just_benchmark(X_train, y_train, X_test, y_test,
                               regressors, STD_REGR_LOSS, 'iid',
                               pairwise_CI=True)
 \end{verbatim}
+}
 Use \code{pairwise\_CI=True} for CI of loss difference to reference method
 
 \begin{center}
+{\footnotesize
 \begin{tabular}{|l|l|r|l|r|l|r|}
 \toprule
 {}  &        {MAE} &     {p} &        {MSE} &      {p} & {NLL (nats)} &      {p} \\
@@ -265,6 +277,7 @@ GPR &  0.75(13)    &  0.0009 &  0.75(28)    &  $<$0.0001 &  1.27(12)    &  $<$0.
 iid &  0.96908     &    {--} &  1.3982      &     {--} &  1.5884      &     {--} \\
 \bottomrule
 \end{tabular}
+}
 \end{center}
 
 \end{multicols}
