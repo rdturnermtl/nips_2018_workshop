@@ -251,8 +251,9 @@ iid               &  0.53(16)  &     {--} &  0.5(0)    &     {--} &  0(0)    &  
 
 \sectionx{Performance curves}
 
-\includegraphics[width=0.45\textwidth]{AUC.png}\\
-\includegraphics[width=0.45\textwidth]{AP.png}
+\includegraphics[width=0.4\textwidth]{output.png}\\
+\hspace*{1.75in}\includegraphics[width=0.36\textwidth]{AUC.png}\\
+\hspace*{1.75in}\includegraphics[width=0.36\textwidth]{AP.png}
 
 \sectionx{Regression}
 
@@ -264,8 +265,7 @@ full_tbl = btr.just_benchmark(X_train, y_train, X_test, y_test,
                               pairwise_CI=True)
 \end{verbatim}
 }
-Use \code{pairwise\_CI=True} for CI of loss difference to reference method
-
+%Use \code{pairwise\_CI=True} for CI of loss difference to reference method
 \begin{center}
 {\footnotesize
 \begin{tabular}{|l|l|r|l|r|l|r|}
