@@ -103,12 +103,12 @@
 
 \begin{itemize}
   \item Easy benchmarking of machine learning models with sklearn interface with statistical tests built-in
-  \item Error bars and significance tests still too rare in ML
+  \item Error bars and significance tests should be standard in ML
   \item One liner on sklearn compatible objects: 
   \begin{itemize}
     \item train, test, and evaluate the models on multiple loss functions
   \end{itemize}
-  \item Process are usable in a modular way
+  \item Process is usable in a modular way
 \end{itemize}
 
 \begin{itemize}
@@ -159,11 +159,11 @@
 \begin{itemize}
   \item Two metric types: \emph{loss functions} and \emph{curve summaries}
   \begin{align}
-    \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]
+    \Loss_A = \frac{1}{N} \sum_{i=1}^N \loss_i = \frac{1}{N} \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]
   \end{align}
   \item Curve summaries (ROC, PR, PRG) for a single number
   \item Built-in \emph{proper scoring rules}: log loss (NLL), Brier loss, spherical loss
-  \item General loss matrices, and new metrics to be easily added
+  \item General loss matrices, and new metrics are easily added
   \item Non-probabilistic methods usable by ``pipelining'' a \emph{calibrator}
 \end{itemize}
 
