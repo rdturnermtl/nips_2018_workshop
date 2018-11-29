@@ -116,9 +116,9 @@
 \begin{itemize}
   \item Easy benchmarking of machine learning models with sklearn interface with statistical tests built-in
   \item Error bars and significance tests should be standard in ML
-  \item One liner on sklearn compatible objects: 
+  \item One liner on sklearn compatible objects
   \begin{itemize}
-    \item train, test, and evaluate the models on multiple loss functions
+    \item Train, test, and evaluate the models on multiple loss functions
   \end{itemize}
   \item Process is usable in a modular way
 \end{itemize}
@@ -146,7 +146,7 @@
 %
 \sectionx{Modular pieces}
 \begin{itemize}
-  \item ``do-it-all'' \code{just\_benchmark} routine has 3 phases
+  \item The ``do-it-all'' \code{just\_benchmark} routine has 3 phases
   \item \code{get\_pred\_log\_prob}: predictive distributions on each test point and model
   \item \code{loss\_table}: the losses for each prediction
   \item \code{loss\_summary\_table}: mean loss for each method $+$ error bars and p-values
@@ -183,7 +183,7 @@
 \begin{itemize}
   \item Place CI on mean loss with $N \rightarrow \infty$ test set from the same distn.
   \item Three methods for CI: t-test, bootstrap, and Bernstein bound
-  \item p-values designed to match the error bars (can be via the 3 methods)
+  \item The p-values are designed to match the error bars (via the 3 methods)
 \end{itemize}
 
 \sectionx{Error bars on curves}
@@ -232,7 +232,7 @@ classifiers = {'iid': btc.JustNoise(),
 }
 \begin{itemize}
   \item Loss functions in \code{STD\_CLASS\_LOSS}, curves (e.g., ROC, PR) in \code{STD\_BINARY\_CURVES}
-  \item \code{ref\_method} reference for paired statistical tests
+  \item The reference \code{ref\_method} for paired statistical tests
   \item Constant prediction dummy model in \code{JustNoise}
 \end{itemize}
 {\normalsize
