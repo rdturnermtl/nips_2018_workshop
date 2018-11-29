@@ -56,6 +56,9 @@
 
 \usepackage{float} 
 
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
 \renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
 \newcommand{\mat}[1]{{\ensuremath{\mathbf{#1}}}} % matrix
 
@@ -82,12 +85,21 @@
 % The third is 19% wide and houses a logo for your university/organization or a photo of you
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
-\begin{centering}{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{The Machine Learning Benchmark Tools Package} \color{Black}}\\ % Title
-%\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\ % TODO try and move this to the right?
-\Huge \textbf{Ryan Turner}\\ % Author(s)
-\end{centering}
+{
+\setlength\extrarowheight{35pt}
+\begin{tabular}{P{15cm}cP{15cm}}
+\multirow{2}{*}{\includegraphics[width=5cm]{qr.png}}
+&
+{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{The Machine Learning Benchmark Tools Package} \color{Black}}
+&
+\multirow{2}{*}{\includegraphics[width=12cm]{uber_ai_logo_bootleg.pdf}} \\
+&
+\Huge \textbf{Ryan Turner}
+&
+\end{tabular}
+}
 
-\vspace{1cm} % A bit of extra whitespace between the header and poster content
+\vspace{7mm} % A bit of extra whitespace between the header and poster content
 
 %----------------------------------------------------------------------------------------
 
