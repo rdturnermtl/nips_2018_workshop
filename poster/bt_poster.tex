@@ -88,11 +88,11 @@
 {
 \setlength\extrarowheight{35pt}
 \begin{tabular}{P{15cm}cP{15cm}}
-\multirow{2}{*}{\includegraphics[width=5cm]{qr.png}}
+\multirow{2}{*}{~}
 &
-{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{The Machine Learning Benchmark Tools Package} \color{Black}}
+{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{The Machine Learning Paper (mlpaper) Package} \color{Black}}
 &
-\multirow{2}{*}{\includegraphics[width=12cm]{uber_ai_logo_bootleg.pdf}} \\
+\multirow{2}{*}{~} \\
 &
 \Huge \textbf{Ryan Turner}
 &
@@ -131,7 +131,7 @@
 \end{itemize}
 \vspace{17mm}
 \textbf{Code}
-\large {\url{github.com/rdturnermtl/benchmark_tools}}
+\large {\url{https://github.com/rdturnermtl/mlpaper}}
 \vspace{7mm}
 
 \columnbreak
@@ -139,8 +139,8 @@
 \mysection{The interface}
 %
 \begin{itemize}
-  \item Classification uses \code{benchmark\_tools.classification}
-  \item Regression uses \code{benchmark\_tools.regression}
+  \item Classification uses \code{mlpaper.classification}
+  \item Regression uses \code{mlpaper.regression}
   \item Bayes' decision rule converts predictive distribution to \emph{action} for each loss function
   \item Objects just support methods \code{fit} and \code{predict\_log\_proba} (sklearn interface)
 \end{itemize}
@@ -215,8 +215,8 @@
 \sectionx{Classification}
 {\normalsize
 \begin{verbatim}
-import benchmark_tools.classification as btc
-from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
+import mlpaper.classification as btc
+from mlpaper.classification import STD_BINARY_CURVES, STD_CLASS_LOSS
 performance_df, performance_curves_dict = \
     btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
                        STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method='iid')
@@ -238,7 +238,7 @@ classifiers = {'iid': btc.JustNoise(),
 \end{itemize}
 {\normalsize
 \begin{verbatim}
-import benchmark_tools.sciprint as sp
+import mlpaper.sciprint as sp
 print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True))
 \end{verbatim}
@@ -287,7 +287,7 @@ PR
 {\normalsize
 \begin{tabular}{cc}
 \begin{pycode}
-import benchmark_tools.regression as btr
+import mlpaper.regression as btr
 full_tbl = btr.just_benchmark(X_train, y_train, X_test, y_test,
                               regressors, STD_REGR_LOSS, 'iid',
                               pairwise_CI=True)
