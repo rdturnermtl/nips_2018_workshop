@@ -31,7 +31,7 @@
 \usepackage{booktabs}
 \usepackage{siunitx}
 
-\title{The Machine Learning Benchmark Tools Package}
+\title{The Machine Learning Paper (mlpaper) Package}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -44,8 +44,7 @@
 % author name.
 
 \author{
-  Ryan Turner \\
-  Uber AI Labs
+  Ryan Turner
 }
 
 \renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
@@ -82,29 +81,29 @@ Surprisingly, error bars and significance levels are rarer in ML than other part
 Challenges and benchmark data sets tend to plateau: Initial big gains are followed by a long period of incremental gains.
 Once these gains become small, they are often explainable purely by sampling noise.
 
-To enable widespread error analysis with minimal time overhead we present the \emph{Benchmark Tools} Python package.\footnote{This package is found at
-\url{https://github.com/rdturnermtl/benchmark_tools}.}
-Benchmark Tools is usable as a simple one-liner using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and train/test data sets.
+To enable widespread error analysis with minimal time overhead we present the \emph{mlpaper} Python package.\footnote{This package is found at
+\url{https://github.com/rdturnermtl/mlpaper}.}
+The mlpaper package is usable as a simple one-liner using a dictionary of sklearn compatible objects~\citep{Pedregosa2011} and train/test data sets.
 The routine will train, test, and evaluate the models on multiple loss functions.
 Individual pieces of this process are usable in a modular way.
 
-Considering multiple loss functions is a design principle of Benchmark Tools.
+Considering multiple loss functions is a design principle of mlpaper.
 Often challenges and analysis are based upon a single (somewhat arbitrary) loss function, and ML developers often become obsessed with incremental improvements in a single metric.
-The Benchmark Tools package supports the Bayes' decision rule calculation that converts a predictive distribution into a different \emph{action} for each loss function.
+The mlpaper package supports the Bayes' decision rule calculation that converts a predictive distribution into a different \emph{action} for each loss function.
 The classic example for regression is for MSE one should report the mean of the predictive distribution while for MAE one should report the median~\citep{Marchini2013}.
 This conversion is done automatically within the package and is essential if one wants to ensure a single model is being benchmarked fairly and consistently across multiple metrics.
 The classification benchmark can build loss functions with arbitrary loss matrices; this allows, for example, probabilistic predictions to be converted to a ``don't know'' option and evaluated.
 
 \sectionx{The interface}
-Benchmark Tools was largely motivated by noticing that applied ML projects contain many repeated ``boilerplate'' code segments that frequently repeat across projects.
+The mlpaper package was largely motivated by noticing that applied ML projects contain many repeated ``boilerplate'' code segments that frequently repeat across projects.
 These typically consist of: splitting data, training models, testing models, evaluating with statistical analysis, and finally proper formatting of tables.
 
 The high level interface of the package has just two phases: \code{just\_benchmark} and \code{just\_format\_it}.
 These work as follows:
 \vspace{-2mm}
 \begin{verbatim}
-import benchmark_tools.classification as btc
-from benchmark_tools.classification import STD_CLASS_LOSS, STD_BINARY_CURVES
+import mlpaper.classification as btc
+from mlpaper.classification import STD_BINARY_CURVES, STD_CLASS_LOSS
 performance_df, performance_curves_dict = \
     btc.just_benchmark(X_train, y_train, X_test, y_test, 2, classifiers,
                        STD_CLASS_LOSS, STD_BINARY_CURVES, ref_method='iid')
@@ -124,7 +123,7 @@ classifiers = {'iid': btc.JustNoise(),
 \end{verbatim}
 \vspace{-2mm}
 The objects need not be sklearn objects but merely support the methods \code{fit} and \code{predict\_log\_proba} as per the sklearn interface.
-Equivalent routines are available in \code{benchmark\_tools.regression} for regression problems.
+Equivalent routines are available in \code{mlpaper.regression} for regression problems.
 
 Although the most convenient way to benchmark is via the ``do-it-all'' \code{just\_benchmark} routine, the package also allows modular usage of \code{just\_benchmark}'s three phases.
 This allows for building a dataframe of: predictive distributions on each test point and model (\code{get\_pred\_log\_prob}), the losses for each prediction (\code{loss\_table}), and the mean loss for each method along with error bars and p-values (\code{loss\_summary\_table})\@.
@@ -137,7 +136,7 @@ The performance dataframe is converted to cleanly formatted tables: correct sign
 Here we use:
 \vspace{-2mm}
 \begin{verbatim}
-import benchmark_tools.sciprint as sp
+import mlpaper.sciprint as sp
 print(sp.just_format_it(performance_df, shift_mod=3, unit_dict={'NLL': 'nats'},
                         non_finite_fmt={sp.NAN_STR: '{--}'}, use_tex=True))
 \end{verbatim}
@@ -178,14 +177,14 @@ The package comes with a \emph{data splitter} module that supports random, ordin
 It also allows for jointly splitting across multiple features to test difficult generalization cases (e.g., test set of random unseen users \emph{and} later in time than training)\@.
 
 \sectionx{Loss functions}
-Benchmark Tools is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
+The mlpaper package is based upon two types of metrics: \emph{loss functions} and \emph{curve summaries}.
 From a decision theoretic perspective, loss functions are the more justified metric for evaluation; they are also easier to place confidence intervals on.
 The loss for model $A$ on iid test data with labels $y_{1:N}$ works as
 \begin{align}
   \Loss_A = \sum_{i=1}^N \loss_i = \sum_{i=1}^N \loss(y_i, a_i)\,, \quad a_i = \argmin_a \E_{P_A(y_i|\vec x_i)}[\loss(y_i, a)]\,,
 \end{align}
 where $a_i$ is the Bayes' optimal action for the loss function $\loss$.
-Benchmark Tools has built-in support for general \emph{loss matrices} for hard classification but also supports the log loss (NLL), Brier loss, and spherical loss as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a model's soft predictions.
+The mlpaper package has built-in support for general \emph{loss matrices} for hard classification but also supports the log loss (NLL), Brier loss, and spherical loss as \emph{proper scoring rules}~\citep{Gneiting2007} to evaluate a model's soft predictions.
 The modular system is extendable, allowing for new metrics to be easily added.
 Non-probabilistic methods are usable by ``pipelining'' with a \emph{calibrator}~\citep{Kull2017,Platt1999}, some of which are in sklearn.
 
@@ -225,7 +224,7 @@ The use of one-liner performance tables with error bars and significance levels 
 The package still has much potential for expansion beyond classification and regression to more complex tasks such as structured prediction problems.
 
 \paragraph{Acknowledgments}
-We thank Riashat Islam for setting up continuous integration testing in the Benchmark Tools package, and Jane Hung for proofreading.
+We thank Riashat Islam for setting up continuous integration testing in the mlpaper package, and Jane Hung for proofreading.
 
 \bibliographystyle{abbrvnat}
 \bibliography{btpaper} % References file
